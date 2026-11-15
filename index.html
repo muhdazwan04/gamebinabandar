@@ -265,9 +265,16 @@ function arcTab(ix,iz,ox,oz,xo,zo){const k=ix+','+iz+','+ox+','+oz+','+xo+','+zo
 function arcPtU(Tc,ix,iz,ox,oz,xo,zo,t){const T=arcTab(ix,iz,ox,oz,xo,zo),g=t*T.L;let j=0;while(j<23&&T.cum[j+1]<g)j++;const d=T.cum[j+1]-T.cum[j];return arcPt(Tc,ix,iz,ox,oz,xo,zo,(j+(d>0?(g-T.cum[j])/d:0))/24)}
 function segPt(P,Q,pr,nx,w,tp,tq){const dx=Math.sign(Q[0]-P[0]),dz=Math.sign(Q[1]-P[1]);
 const arc=(T,ix,iz,ox,oz,t,th)=>{const l=t.l,cr=t.d&&((iz===0?-ix*oz:-ox*iz)<0);return iz===0?arcPtU(T,ix,iz,ox,oz,cr?-l:l,l,th):arcPtU(T,ix,iz,ox,oz,l,cr?-l:l,th)};
-if(w<.5&&pr){const ix=Math.sign(P[0]-pr[0]),iz=Math.sign(P[1]-pr[1]);if((ix!==dx||iz!==dz)&&ix*dx+iz*dz===0)return arc(P,ix,iz,dx,dz,tp,.5+w)}
-else if(w>=.5&&nx){const ox=Math.sign(nx[0]-Q[0]),oz=Math.sign(nx[1]-Q[1]);if((ox!==dx||oz!==dz)&&dx*ox+dz*oz===0)return arc(Q,dx,dz,ox,oz,tq,w-.5)}
-const t=w<.5?tp:tq;return[P[0]+(Q[0]-P[0])*w+(dx?0:t.l),P[1]+(Q[1]-P[1])*w+(dz?0:t.l),Math.atan2(-dz,dx)]}
+const ix=pr?Math.sign(P[0]-pr[0]):0,iz=pr?Math.sign(P[1]-pr[1]):0,pA=!!pr&&(ix!==dx||iz!==dz)&&ix*dx+iz*dz===0,ox=nx?Math.sign(nx[0]-Q[0]):0,oz=nx?Math.sign(nx[1]-Q[1]):0,qA=!!nx&&(ox!==dx||oz!==dz)&&dx*ox+dz*oz===0;
+/* peralihan lorong (2 lorong <-> 1 lorong) dilicinkan supaya gerabak tidak melompat ke lorong sebelah (kesan "klon" di selekoh) */
+const sm=u=>{u=Math.min(1,Math.max(0,u));return u*u*(3-2*u)};
+if(w<.5&&pA){const p=arc(P,ix,iz,dx,dz,tp,.5+w);if(!qA)return p;const E=arc(P,ix,iz,dx,dz,tp,1),A=arc(Q,dx,dz,ox,oz,tq,0),k=sm(w/.5);return[p[0]+(A[0]-E[0])*k,p[1]+(A[1]-E[1])*k,p[2]]}
+if(w>=.5&&qA)return arc(Q,dx,dz,ox,oz,tq,w-.5);
+const st=(l,v)=>[P[0]+(Q[0]-P[0])*v+(dx?0:l),P[1]+(Q[1]-P[1])*v+(dz?0:l)],hd=Math.atan2(-dz,dx);let p;
+if(pA){p=st(tq.l,w);const E=arc(P,ix,iz,dx,dz,tp,1),B=st(tq.l,.5),k=1-sm((w-.5)/.5);p=[p[0]+(E[0]-B[0])*k,p[1]+(E[1]-B[1])*k]}
+else if(qA){p=st(tp.l,w);const A=arc(Q,dx,dz,ox,oz,tq,0),B=st(tp.l,.5),k=sm(w/.5);p=[p[0]+(A[0]-B[0])*k,p[1]+(A[1]-B[1])*k]}
+else p=st(tp.l+(tq.l-tp.l)*sm(w),w);
+return[p[0],p[1],hd]}
 const BLD={
 gov(g,l){const h=.6+.3*(l-1);m(bx,'#e8e4da',0,h/2,0,.88,h,.66,g);m(bx,'#b9b09a',0,h+.04,0,.94,.08,.72,g);m(c4,'#cfc7b2',0,h+.2,0,.5,.24,.5,g,Math.PI/4);for(let k=0;k<4;k++)m(cy,'#ffffff',-.33+.22*k,h/2,.37,.045,h,.045,g);m(cy,'#ddd',0,h+.55,0,.012,.5,.012,g);m(bx,'#e53935',.07,h+.7,0,.14,.08,.01,g)},
 kew(g,l){const h=.9+.4*(l-1);m(bx,'#3f6f96',0,h/2,0,.6,h,.6,g);for(let k=0;k<4+l;k++)m(bx,'#cfe9f5',0,.15+k*(h-.2)/(3+l),.31,.5,.07,.02,g);m(bx,'#f2b94b',0,h+.04,0,.66,.08,.66,g);m(cy,'#ddd',0,h+.25,0,.012,.4,.012,g)},
