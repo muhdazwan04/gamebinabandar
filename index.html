@@ -108,6 +108,28 @@ html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;-webk
 #bs{grid-template-columns:repeat(auto-fit,minmax(96px,1fr))}
 #lbody{max-height:94vh;max-height:94dvh}
 }
+#intro{position:fixed;inset:0;z-index:100;background:radial-gradient(ellipse at 50% 90%,#1b4a63 0,#0d2a3c 45%,#050f16 100%);overflow:hidden;display:flex;flex-direction:column;align-items:center;padding-top:16vh;transition:opacity .8s,visibility .8s;cursor:pointer;user-select:none;-webkit-user-select:none}
+#intro.out{opacity:0;visibility:hidden}
+#intro .stars{position:absolute;inset:0;pointer-events:none}
+#intro .star{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;opacity:0;animation:itw 2.4s infinite}
+@keyframes itw{0%,100%{opacity:0}50%{opacity:.9}}
+#intro .moon{position:absolute;right:12%;top:9%;width:clamp(36px,8vw,64px);aspect-ratio:1;border-radius:50%;background:#fff8dc;box-shadow:0 0 30px 8px rgba(255,248,220,.35);opacity:0;animation:ifade 1.6s .3s forwards}
+#intro .city{position:absolute;left:0;right:0;bottom:0;height:44%;display:flex;align-items:flex-end;justify-content:center;gap:3px;padding:0 4px;pointer-events:none}
+#intro .bd{flex:1;max-width:48px;border-top:2px solid #3cc4cf;transform:scaleY(0);transform-origin:bottom;animation:irise .9s cubic-bezier(.2,.9,.3,1.15) forwards;background-color:#12384d;background-image:repeating-linear-gradient(0deg,#12384d 0 7px,transparent 7px 13px),repeating-linear-gradient(90deg,rgba(242,185,75,.8) 0 4px,transparent 4px 10px)}
+@keyframes irise{to{transform:scaleY(1)}}
+@keyframes ifade{to{opacity:1}}
+#intro .ttl{position:relative;display:flex;justify-content:center;font-weight:900;line-height:1.05;pointer-events:none}
+#intro .t1{font-size:clamp(2.6rem,13vw,6rem);letter-spacing:.14em;color:#fff;text-shadow:0 0 18px #3cc4cf,0 0 44px rgba(60,196,207,.55)}
+#intro .t2{font-size:clamp(1.5rem,8vw,3.4rem);letter-spacing:.2em;color:var(--gold);text-shadow:0 0 16px rgba(242,185,75,.7),0 0 40px rgba(242,185,75,.35)}
+#intro .ttl span{display:inline-block;opacity:0;transform:translateY(-34px) scale(1.5);animation:idrop .6s cubic-bezier(.2,.9,.3,1.2) forwards}
+@keyframes idrop{to{opacity:1;transform:none}}
+#intro .sub{margin-top:14px;color:var(--mut);letter-spacing:.3em;font-size:clamp(.7rem,2.8vw,1rem);text-transform:uppercase;opacity:0;animation:ifade 1s 3s forwards;pointer-events:none}
+#intro .bar{position:absolute;left:50%;bottom:6%;transform:translateX(-50%);width:min(260px,60vw);height:5px;border-radius:5px;background:rgba(255,255,255,.12);overflow:hidden;pointer-events:none}
+#intro .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--ac),var(--gold));animation:ibar 5.2s linear forwards}
+@keyframes ibar{to{width:100%}}
+#intro .hint{position:absolute;left:0;right:0;bottom:calc(6% + 16px);text-align:center;font-size:.72rem;color:var(--mut);letter-spacing:.15em;animation:iblink 1.6s 2s infinite;opacity:0;pointer-events:none}
+@keyframes iblink{0%,100%{opacity:0}50%{opacity:.8}}
+@media (prefers-reduced-motion:reduce){#intro *{animation-duration:.01s!important;animation-delay:0s!important}}
 #auth{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:16px;background:linear-gradient(160deg,#0d2a3c,#143445 60%,#0a1c28);overflow:auto}
 #auth .card{background:#143445;border:1px solid #2c5568;border-radius:14px;padding:20px;width:100%;max-width:380px}
 #auth h2{margin:0 0 6px}#auth p{margin:6px 0;font-size:.84rem}
@@ -120,6 +142,16 @@ html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;-webk
 <div id="side"><button class="b" id="rl" aria-label="Putar kiri">⟲</button><button class="b" id="rr" aria-label="Putar kanan">⟳</button><button class="b" id="spd"></button><button class="b" id="tx"></button><button class="b" id="vup">🚌 Kenderaan<small>naik taraf</small></button><button class="b" id="bud">🛍️ Bajet Rakyat<small>belian pintar</small></button><button class="b" id="sr">📮 Suara Rakyat<small>kotak aduan</small></button><button class="b" id="eco">🧾 Gaji &amp; Cukai<small>tetapan presiden</small></button><button class="b" id="pinfo">ℹ️ Info Swasta<small>untung &amp; pekerja</small></button><button class="b" id="menteri">📊 Menteri Perangkaan<small>kadar pengangguran</small></button><button class="b" id="keamanan">🚓 Menteri Keamanan<small>saman, bayaran &amp; balai</small></button><button class="b" id="jpj">🪪 JPJ<small>plat kenderaan</small></button><button class="b" id="adv"></button><button class="b" id="fest">🎉<small>RM5,000</small></button><button class="b" id="bank">🏦 Pinjaman<small>bank negara</small></button><button class="b" id="grd">⚡ Jaringan<small>liputan listrik</small></button><button class="b" id="fs">⛶ Skrin penuh<small>tekan F</small></button><button class="b" id="set">⚙️ Tetapan<small>reset game di sini</small></button><button class="b" id="end">⏭ Hari seterusnya</button></div>
 <div id="bar"><button class="b" id="bto">▾ Sembunyi menu bina</button><div id="bs"><select class="bsel" id="selR" aria-label="Jalan"></select><select class="bsel" id="selH" aria-label="Jenis Rumah"></select><select class="bsel" id="selA" aria-label="Aset Negara"></select><select class="bsel" id="selE" aria-label="Elektrik"></select><select class="bsel" id="selF" aria-label="Makanan dan Pertanian"></select><select class="bsel" id="selP" aria-label="Perniagaan"></select><select class="bsel" id="selD" aria-label="Hiasan"></select><select class="bsel" id="selB" aria-label="Bangunan"></select><select class="bsel" id="selV" aria-label="Kenderaan"></select><select class="bsel" id="selS" aria-label="Stesen"></select></div><div id="bt"></div></div>
 <div id="auth"><div class="card"><p>Memuatkan…</p></div></div>
+<div id="intro" aria-label="Iwan New Town"><div class="stars"></div><div class="moon"></div><div class="ttl t1"></div><div class="ttl t2"></div><div class="sub">Bina Bandar 3D</div><div class="city"></div><div class="hint">SENTUH UNTUK LANGKAU</div><div class="bar"><i></i></div></div>
+<script>
+(function(){const el=document.getElementById('intro');if(!el)return;const $q=c=>el.querySelector(c),st=$q('.stars'),ct=$q('.city');
+for(let i=0;i<45;i++){const d=document.createElement('i');d.className='star';d.style.left=Math.random()*100+'%';d.style.top=Math.random()*55+'%';d.style.animationDelay=(Math.random()*2.4)+'s';st.appendChild(d)}
+const n=Math.max(9,Math.min(24,Math.floor(innerWidth/40)));for(let i=0;i<n;i++){const b=document.createElement('div');b.className='bd';b.style.height=(28+Math.random()*72)+'%';b.style.animationDelay=(Math.random()*1.8)+'s';ct.appendChild(b)}
+const L=(box,txt,d0)=>{[...txt].forEach((c,i)=>{const s=document.createElement('span');s.textContent=c===' '?'\u00a0':c;s.style.animationDelay=(d0+i*.09)+'s';box.appendChild(s)})};
+L($q('.t1'),'IWAN',1.2);L($q('.t2'),'NEW TOWN',1.7);
+let gone=false;function bye(){if(gone)return;gone=true;el.classList.add('out');setTimeout(()=>el.remove(),900)}
+el.addEventListener('click',bye);setTimeout(bye,window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches?1200:5400)})();
+</script>
 <div id="tag"></div>
 <div id="ghost"></div>
 <div id="lp"><div id="lbody"></div></div>
