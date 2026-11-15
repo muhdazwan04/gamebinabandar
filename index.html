@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="ms"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a1c28">
 <title>Bina Bandar 3D</title>
 <style>
 :root{--g:rgba(10,28,40,.8);--tx:#eef6f9;--mut:#9dbac6;--ac:#3cc4cf;--gold:#f2b94b;--bad:#ff7a6b;--ok:#5fd68f;box-sizing:border-box}
@@ -68,7 +72,42 @@ select{display:block;width:100%;margin-top:3px;background:#0d2230;color:var(--tx
 #vpanel{position:fixed;z-index:4;left:8px;top:calc(var(--toph,60px) + 8px);width:min(206px,calc(100vw - 130px));background:var(--g);backdrop-filter:blur(6px);border-radius:10px;padding:6px 8px;font-size:.72rem;display:none}
 #vpanel .vr{display:flex;align-items:center;justify-content:space-between;gap:4px;margin:3px 0}#vpanel small{display:block;font-size:.62rem;color:var(--mut);line-height:1.2}
 #vpanel .b{padding:3px 7px;font-size:.7rem;white-space:nowrap}
-.st{display:flex;align-items:center;gap:6px;flex:none}.st b{min-width:84px;text-align:center;font-size:.86rem}.st .b{padding:3px 11px;text-align:center}#lbody h3{font-size:.8rem;color:var(--gold);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.04em}</style></head>
+.st{display:flex;align-items:center;gap:6px;flex:none}.st b{min-width:84px;text-align:center;font-size:.86rem}.st .b{padding:3px 11px;text-align:center}#lbody h3{font-size:.8rem;color:var(--gold);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.04em}
+html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-text-size-adjust:100%}
+#top,#bar{padding-left:max(8px,env(safe-area-inset-left,0px))}
+#side{right:max(8px,env(safe-area-inset-right,0px))}
+@media (max-width:760px),(max-height:520px),(pointer:coarse) and (max-width:1000px){
+#top{flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;gap:4px;pointer-events:auto;padding-top:calc(5px + env(safe-area-inset-top,0px));padding-right:max(6px,env(safe-area-inset-right,0px));scrollbar-width:none;-webkit-overflow-scrolling:touch;touch-action:pan-x}
+#top::-webkit-scrollbar{display:none}
+.chip{flex:none;min-width:0;padding:3px 7px;font-size:.62rem;border-radius:8px;white-space:nowrap}
+.chip b{font-size:.8rem}
+.chip.id{max-width:140px}
+#side{gap:4px;right:max(4px,env(safe-area-inset-right,0px))}
+#side .b{padding:4px 7px;font-size:.68rem;border-radius:8px;white-space:nowrap}
+#side .b small{display:none}
+#bar{max-height:36vh;max-height:36dvh;padding:5px 6px calc(6px + env(safe-area-inset-bottom,0px));gap:4px;border-radius:12px 12px 0 0;-webkit-overflow-scrolling:touch}
+#bar.col{left:6px}
+#bs{grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:4px}
+.bsel{padding:5px 6px;font-size:.72rem;border-radius:8px}
+#bt{grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:4px}
+#bt .b{padding:4px 4px;font-size:.68rem}
+#bt .b small{font-size:.58rem}
+#bto{padding:3px 9px;font-size:.7rem}
+#toast{left:6px;right:6px;font-size:.76rem;padding:6px 10px}
+#lp{padding:8px;align-items:flex-end}
+#lbody{max-width:none;max-height:88vh;max-height:88dvh;padding:14px;border-radius:14px 14px 10px 10px}
+#lbody p,.ans{font-size:.8rem}
+#upbar{width:min(300px,calc(100vw - 96px));font-size:.76rem}
+#vpanel{width:min(200px,calc(100vw - 96px))}
+#ov div{max-width:92vw;padding:18px}
+.fld input,.row input,select{font-size:16px}
+}
+@media (max-height:480px) and (orientation:landscape){
+#bar{max-height:42vh;max-height:42dvh}
+#bs{grid-template-columns:repeat(auto-fit,minmax(96px,1fr))}
+#lbody{max-height:94vh;max-height:94dvh}
+}
+</style></head>
 <body>
 <canvas id="cv"></canvas>
 <div id="vpanel"></div><div id="top"></div><div id="toast"></div><div id="upbar"></div>
@@ -874,7 +913,7 @@ const o=old[info];if(!o)return hideInfo();tbb.setFromObject(o);tv.set(tx(info),M
 if(tv.z>1){g.style.display='none';return}
 g.style.display='block';g.style.left=Math.round((tv.x*.5+.5)*innerWidth)+'px';g.style.top=Math.round((-tv.y*.5+.5)*innerHeight)+'px'}
 const L=t=>S.g.reduce((a,b,i)=>a+(b&&b.t===t&&(!NEED.has(t)||S.pw[i])?b.l:0),0);
-function init(fresh){tool=null;mv=null;hideInfo();selUI();clearHover();if(fresh){PROF={pres:'',country:''};try{localStorage.removeItem(PK)}catch(e){}}S={coin:20000,pop:0,food:0,sat:50,pol:0,turn:1,g:Array(N*N).fill(null),pt:5,ht:.2,gw:60,bt:50,mw:40,next:4,ever:false,over:false,loans:[],pw:new Uint8Array(N*N),dark:0,t:0,nd:3,spd:180,walks:[],roads:[],lrts:[],monos:[],vh:[],vl:{},sw:{},sp:{},fare:0,sv:0,dm:1,bj:null,cars:0,cf:0,warn:{}};const rs=fresh?(clearSave(),false):load();for(let i=0;i<N*N;i++)sync(i,true);calc();$('ov').classList.remove('show');$('again').textContent='Teruskan bermain';$('lp').classList.remove('show');hud();if(rs&&(S.turn>1||S.g.some(Boolean))){if(!PROF.pres)profForm(false);const dy=catchUp();if(S.over)return;return say('💾 Simpanan dimuatkan: '+DS(S.turn)+'.'+(dy?' ⏳ '+dy+' hari berlalu semasa anda pergi (masa terus berjalan).':' Game diteruskan, bukan dari awal.'))}
+function init(fresh){tool=null;mv=null;hideInfo();selUI();clearHover();if(fresh){PROF={pres:'',country:''};try{localStorage.removeItem(PK)}catch(e){}}S={coin:20000,pop:0,food:0,sat:50,pol:0,turn:1,g:Array(N*N).fill(null),pt:5,ht:.2,gw:60,bt:50,mw:40,next:4,ever:false,over:false,loans:[],pw:new Uint8Array(N*N),dark:0,t:0,nd:3,spd:1,walks:[],roads:[],lrts:[],monos:[],vh:[],vl:{},sw:{},sp:{},fare:0,sv:0,dm:1,bj:null,cars:0,cf:0,warn:{}};const rs=fresh?(clearSave(),false):load();for(let i=0;i<N*N;i++)sync(i,true);calc();$('ov').classList.remove('show');$('again').textContent='Teruskan bermain';$('lp').classList.remove('show');hud();if(rs&&(S.turn>1||S.g.some(Boolean))){if(!PROF.pres)profForm(false);const dy=catchUp();if(S.over)return;S.spd=1;spdUI();return say('💾 Simpanan dimuatkan: '+DS(S.turn)+'.'+(dy?' ⏳ '+dy+' hari berlalu semasa anda pergi (masa terus berjalan).':' Game diteruskan, bukan dari awal.'))}
 if(!PROF.pres)return profForm(false);welcome()}
 function welcome(){say('Selamat memimpin '+PROF.country+', '+title()+'! Pilih item di menu bawah, kemudian KLIK petak di peta untuk membina (atau seret). Klik bangunan untuk lihat namanya. Tetapkan gaji dan cukai di butang 🧾 Gaji & Cukai. Bina Solar atau Petrol dulu (menu ⚡ Elektrik): rumah, pasar, sekolah, RS dan pabrik di luar liputan listrik tidak berfungsi (ditandai bulatan merah).')}
 const SK='bina_bandar_3d_save_v1';
@@ -1207,4 +1246,11 @@ $('vpanel').onclick=e=>{const b=e.target.closest('[data-v]');if(!b||!S)return;co
 if(S.over||!VT[k])return;const lv=vlv(k);if(lv>=VMAX)return;const c=vCost(k);if(S.coin<c)return say('Kas kurang. Naik taraf '+B[k][1]+' butuh '+rm(c)+'.');
 S.coin-=c;S.vl=S.vl||{};S.vl[k]=lv+1;calc();hud();save();vpUI(true);say(B[k][0]+' '+B[k][1]+' naik ke Lv '+(lv+1)+' (-'+rm(c)+'). Pendapatan & laju meningkat.')};
 size();buildSel();loadProf();init();rz();requestAnimationFrame(loop);
+/* ---------- auto skrin penuh pada sentuhan pertama (pelayar mewajibkan gerakan pengguna) ---------- */
+(function(){const d=document,el=d.documentElement,rq=el.requestFullscreen||el.webkitRequestFullscreen;if(!rq||d.fullscreenElement||d.webkitFullscreenElement)return;
+let done=false;const evs=['pointerup','touchend','click','keydown'];
+function go(e){if(done)return;if(e&&e.type==='keydown'&&/^(Shift|Control|Alt|Meta)$/.test(e.key))return;done=true;evs.forEach(n=>removeEventListener(n,go,true));
+try{const r=rq.call(el,{navigationUI:'hide'});if(r&&r.then)r.then(()=>{try{if(screen.orientation&&screen.orientation.lock)screen.orientation.lock('landscape').catch(()=>{})}catch(x){}}).catch(()=>{})}catch(x){}}
+evs.forEach(n=>addEventListener(n,go,true))})();
+
 </script></body></html>
