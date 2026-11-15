@@ -1308,7 +1308,7 @@ if(S.over||!VT[k])return;const lv=vlv(k);if(lv>=VMAX)return;const c=vCost(k);if(
 S.coin-=c;S.vl=S.vl||{};S.vl[k]=lv+1;calc();hud();save();vpUI(true);say(B[k][0]+' '+B[k][1]+' naik ke Lv '+(lv+1)+' (-'+rm(c)+'). Pendapatan & laju meningkat.')};
 
 /* ---------- akaun: ID + kata laluan; rekod disimpan di pelayan sendiri (server.js) supaya boleh dibuka di telefon lain ---------- */
-const API_BASE='https://script.google.com/macros/s/AKfycby5M8T9Vl3xdQiRfwkKOPzLQrI6IwFCe6kLRXxrqpTBsHazUQS75OV4u9cmWNWLXLpw0A/exec';/* URL Web app Google Apps Script (Code.gs) */
+const API_BASE='https://script.google.com/macros/s/AKfycbyh48Y9cOq7FOkG9xwdlAcfcc6TTFVaS3vUigrIQCkwXlN1cDimGWB_xZ2WBcakxYu8RQ/exec';/* URL Web app Google Apps Script (Code.gs) */
 let AUM='in',AUID='',CPT=null,CPL='',TOK='',ST=null;
 try{TOK=localStorage.getItem('bb_token')||''}catch(e){}
 const okId=v=>/^[a-z0-9_.]{3,20}$/.test(v);
