@@ -924,7 +924,7 @@ function init(fresh){tool=null;mv=null;hideInfo();selUI();clearHover();if(fresh)
 S.spd=1;if(!PROF.pres)return profForm(false);welcome()}
 function welcome(){say('Selamat memimpin '+PROF.country+', '+title()+'! Pilih item di menu bawah, kemudian KLIK petak di peta untuk membina (atau seret). Klik bangunan untuk lihat namanya. Tetapkan gaji dan cukai di butang 🧾 Gaji & Cukai. Bina Solar atau Petrol dulu (menu ⚡ Elektrik): rumah, pasar, sekolah, RS dan pabrik di luar liputan listrik tidak berfungsi (ditandai bulatan merah).')}
 let SK='bina_bandar_3d_save_v1';
-function clearSave(){try{localStorage.removeItem(SK)}catch(e){}try{cloudPush()}catch(e){}}
+function clearSave(){try{localStorage.removeItem(SK)}catch(e){}try{DIRTY=true;cloudPush()}catch(e){}}
 function save(){if(!S||S.over)return;try{const g=[];S.g.forEach((c,i)=>{if(c)g.push([i,c.t,c.l,c.r||0,c.m?1:0,c.z|0,c.u||0,c.v||0,c.q||0,c.w?1:0])});localStorage.setItem(SK,JSON.stringify({v:1,coin:S.coin,pop:S.pop,food:S.food,sat:S.sat,turn:S.turn,pt:S.pt,ht:S.ht,gw:S.gw,bt:S.bt,mw:S.mw,next:S.next,ever:S.ever,loans:S.loans,t:S.t,nd:S.nd,spd:S.spd,cv:2,vh:S.vh,vl:S.vl,sw:S.sw,fare:S.fare,rides:S.rides||0,vis:S.vis||0,rich:S.rich||0,sv:S.sv||0,cars:S.cars||0,cf:S.cf||0,dm:S.dm==null?1:S.dm,wall:Date.now(),w:S.warn,sm:S.sm||null,jp:S.jpj||null,g,cam:{x:C.x,z:C.z,yaw:C.yaw,dist:C.dist}}));cloudPush()}catch(e){}}
 function load(){try{const d=JSON.parse(localStorage.getItem(SK)||'null');if(!d||typeof d!=='object')return false;const n=(v,f)=>Number.isFinite(v)?v:f;
 S.coin=n(d.coin,S.coin);S.pop=Math.max(0,n(d.pop,0));S.food=Math.max(0,n(d.food,0));S.sv=Math.max(0,n(d.sv,0));S.cars=Math.max(0,n(d.cars,0));S.cf=clamp(n(d.cf,0),0,1);S.dm=clamp(n(d.dm,1),.4,1);S.sat=clamp(n(d.sat,50),0,100);S.turn=Math.max(1,n(d.turn,1));S.pt=clamp(n(d.pt,5),0,50);S.ht=clamp(n(d.ht,.2),0,2);S.gw=clamp(n(d.gw,60),0,300);S.bt=clamp(n(d.bt,50),0,90);S.mw=clamp(n(d.mw,40),0,300);S.next=n(d.next,4);S.warn=(d.w&&typeof d.w==='object')?d.w:{};S.ever=!!d.ever;S.wall=n(d.wall,0);S.t=Math.max(0,n(d.t,0));S.nd=n(d.nd,3);if(!(S.nd>S.t))S.nd=(Math.floor(S.t/3)+1)*3;S.spd=d.cv===2?(SP.includes(d.spd)?d.spd:180):(({1:180,2:360,4:720,0:0})[d.spd]??180);
@@ -1242,6 +1242,13 @@ $('adv').onclick=()=>{if(!S.over)adv()};
 /* ---------- skrin penuh (F) & Esc ---------- */
 function fsToggle(){const d=document,el=d.documentElement,on=d.fullscreenElement||d.webkitFullscreenElement;try{const r=on?(d.exitFullscreen||d.webkitExitFullscreen).call(d):(el.requestFullscreen||el.webkitRequestFullscreen).call(el);if(r&&r.catch)r.catch(()=>say('Skrin penuh disekat. Buka halaman ini di tab sendiri.'))}catch(x){say('Peranti ini tidak menyokong skrin penuh.')}}
 $('fs').onclick=fsToggle;
+/* skrin penuh automatik pada sentuhan/klik pertama (pelayar mewajibkan satu gerak isyarat pengguna); jika pengguna keluar sendiri, tidak dipaksa semula */
+(function(){let was=false,stop=false;const d=document,el=d.documentElement,on=()=>d.fullscreenElement||d.webkitFullscreenElement;
+function go(){if(stop||on())return;const rq=el.requestFullscreen||el.webkitRequestFullscreen;if(!rq){stop=true;return}
+try{const r=rq.call(el);if(r&&r.then)r.then(()=>{was=true;try{if(screen.orientation&&screen.orientation.lock)screen.orientation.lock('landscape').catch(()=>{})}catch(x){}}).catch(()=>{})}catch(x){}}
+function chg(){if(on())was=true;else if(was)stop=true}
+d.addEventListener('fullscreenchange',chg);d.addEventListener('webkitfullscreenchange',chg);
+['pointerup','touchend','click','keydown'].forEach(t=>addEventListener(t,go,{passive:true}))})();
 addEventListener('keydown',e=>{if(/^(SELECT|INPUT|TEXTAREA)$/.test(e.target.tagName)||e.ctrlKey||e.metaKey||e.altKey)return;const k=e.key.toLowerCase();if(k==='arrowup'||k==='arrowdown'){e.preventDefault();C.dist=clamp(C.dist*(k==='arrowup'?.9:1.1),8,60)}else if(k==='f'){e.preventDefault();fsToggle()}else if(k==='escape'&&tool){setTool(null);clearHover();hud()}});
 $('again').onclick=()=>{if(S.over){clearSave();init()}else $('ov').classList.remove('show')};
 
@@ -1261,7 +1268,7 @@ const API_BASE='https://script.google.com/macros/s/AKfycby5M8T9Vl3xdQiRfwkKOPzLQ
 let AUM='in',AUID='',CPT=null,CPL='',TOK='',ST=null;
 try{TOK=localStorage.getItem('bb_token')||''}catch(e){}
 const okId=v=>/^[a-z0-9_.]{3,20}$/.test(v);
-async function api(path,o){o=o||{};let r,d;try{r=await fetch(API_BASE,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({path:path,method:o.method||'GET',token:TOK||'',body:o.body||null}),redirect:'follow',keepalive:!!o.ka})}catch(e){const er=new Error('Tiada sambungan ke pelayan.');er.status=0;throw er}try{d=await r.json()}catch(e){const er=new Error('Pelayan tidak membalas dengan betul. Semak deploy Apps Script (Who has access: Anyone).');er.status=0;throw er}if(d&&d.status>=400){const er=new Error(d.error||('Ralat pelayan ('+d.status+')'));er.status=d.status;throw er}return d||{}}
+async function api(path,o){o=o||{};let r,d;try{r=await fetch(API_BASE,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({path:path,method:o.method||'GET',token:TOK||'',body:o.body||null}),redirect:'follow',keepalive:!!o.ka})}catch(e){const er=new Error('Tiada sambungan ke pelayan.');er.status=0;throw er}try{d=await r.json()}catch(e){const er=new Error('Pelayan tidak membalas dengan betul. Semak deploy Apps Script (Who has access: Anyone).');er.status=0;throw er}if(d&&d.status>=400){const er=new Error(d.error||('Ralat pelayan ('+d.status+')'));er.status=d.status;er.data=d;throw er}return d||{}}
 const box=h=>{$('auth').innerHTML='<div class="card">'+h+'</div>';$('auth').style.display='flex'};
 function authForm(msg,cls){const rg=AUM==='reg';$('auth').innerHTML='<div class="card"><h2>🏙️ Bina Bandar 3D</h2><p class="mut">'+(rg?'Cipta akaun baharu. Rekod game disimpan dan boleh dibuka di telefon lain dengan ID & kata laluan yang sama.':'Log masuk dengan ID dan kata laluan untuk teruskan rekod anda. Memerlukan internet.')+'</p><label class="fld">ID<input id="ai" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="20" placeholder="huruf kecil, nombor, _ atau ." value="'+esc(AUID)+'"></label><label class="fld">Kata laluan<input id="ap" type="password" autocomplete="'+(rg?'new-password':'current-password')+'" placeholder="minimum 6 aksara"></label>'+(rg?'<label class="fld">Ulang kata laluan<input id="ap2" type="password" autocomplete="new-password" placeholder="taip semula"></label>':'')+'<p class="'+(cls||'er')+'" id="am" style="min-height:1.2em">'+esc(msg||'')+'</p>'+(rg?'<button class="b pri" data-x="reg">✅ Daftar</button><button class="b" data-x="toin">◀ Sudah ada akaun</button><p class="mut" style="font-size:.74rem">Ingat ID & kata laluan anda. Kata laluan yang hilang hanya boleh ditetapkan semula oleh pentadbir pelayan.</p>':'<button class="b pri" data-x="in">🔓 Log masuk</button><button class="b" data-x="toreg">🆕 Daftar akaun baharu</button>')+'</div>';$('auth').style.display='flex'}
 $('auth').addEventListener('click',async e=>{const b=e.target.closest('[data-x]');if(!b)return;const x=b.dataset.x,g=i=>($(i)?$(i).value:''),id=g('ai').trim().toLowerCase(),pw=g('ap');if(x==='toreg'||x==='toin'){AUM=x==='toreg'?'reg':'in';AUID=id;return authForm('')}AUID=id;
@@ -1272,11 +1279,25 @@ if(x==='reg'&&pw!==g('ap2'))return authForm('Kata laluan tidak sama.');
 b.disabled=true;try{const d=await api(x==='reg'?'/api/register':'/api/login',{method:'POST',body:{id,pw}});TOK=d.token;try{localStorage.setItem('bb_token',TOK)}catch(z){}enter(d.id)}catch(er){authForm(er.message)}});
 $('auth').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.tagName==='INPUT'){e.preventDefault();const b=document.querySelector('#auth .pri');if(b)b.click()}});
 /* ---- simpanan di pelayan: versi yang lebih baharu menang ---- */
-async function cloudPull(){const d=await api('/api/save');if(d.exists){const lc=localStorage.getItem(SK);let lw=0;try{lw=lc?(JSON.parse(lc).wall||0):0}catch(x){}
-if((d.ts||0)>lw){if(d.save)localStorage.setItem(SK,d.save);else localStorage.removeItem(SK);if(d.prof)localStorage.setItem(PK,d.prof);else localStorage.removeItem(PK)}}
-CPL=(localStorage.getItem(SK)||'')+'|'+(localStorage.getItem(PK)||'')}
-function cloudNow(){if(!TOK||!window.__user||!navigator.onLine)return;const sv=localStorage.getItem(SK)||'',pf=localStorage.getItem(PK)||'',key=sv+'|'+pf;if(key===CPL)return;let ts=Date.now();try{if(sv)ts=JSON.parse(sv).wall||ts}catch(x){}
-api('/api/save',{method:'PUT',body:{save:sv,prof:pf,ts},ka:key.length<60000}).then(()=>{CPL=key}).catch(er=>{if(er.status===401){TOK='';try{localStorage.removeItem('bb_token')}catch(x){}location.reload()}})}
+let SYNC=0,DIRTY=false,CBUSY=false,CPOLL=false,ACT=0;
+function storeSync(){try{localStorage.setItem(SK+'_sync',String(SYNC))}catch(x){}}
+/* sebarang sentuhan/klik/papan kekunci = ada suntingan yang perlu dihantar ke pelayan; peranti yang hanya dibiarkan terbuka TIDAK menimpa suntingan dari telefon lain */
+['pointerdown','keydown'].forEach(t=>addEventListener(t,()=>{ACT++;DIRTY=true},{capture:true,passive:true}));
+async function cloudPull(){const d=await api('/api/save');let ss=0;try{ss=+localStorage.getItem(SK+'_sync')||0}catch(x){}
+const lc=localStorage.getItem(SK);
+if(d.exists){let lw=0;try{lw=lc?(JSON.parse(lc).wall||0):0}catch(x){}
+const take=ss?(d.ts!==ss):((d.ts||0)>lw);
+if(take){if(d.save)localStorage.setItem(SK,d.save);else localStorage.removeItem(SK);if(d.prof)localStorage.setItem(PK,d.prof);else localStorage.removeItem(PK)}else if(lc&&d.ts!==ss)DIRTY=true;
+SYNC=d.ts||0}else{SYNC=0;if(lc)DIRTY=true}
+storeSync()}
+function cloudNow(){if(!TOK||!window.__user||!navigator.onLine||CBUSY||!DIRTY)return;const sv=localStorage.getItem(SK)||'',pf=localStorage.getItem(PK)||'';const a0=ACT;
+CBUSY=true;api('/api/save',{method:'PUT',body:{save:sv,prof:pf,base:SYNC},ka:(sv.length+pf.length)<60000}).then(d=>{CBUSY=false;SYNC=d.ts||SYNC;storeSync();if(ACT===a0)DIRTY=false}).catch(er=>{CBUSY=false;if(er.status===401){TOK='';try{localStorage.removeItem('bb_token')}catch(x){}location.reload()}else if(er.status===409&&er.data)adopt(er.data)})}
+/* rekod di pelayan lebih baharu (disunting dari telefon lain): terima dan muat semula bangunan tanpa tukar kedudukan kamera */
+function adopt(d){if(!S||!window.__user||!d||!d.exists)return;try{if(d.save)localStorage.setItem(SK,d.save);else localStorage.removeItem(SK);if(d.prof)localStorage.setItem(PK,d.prof);else localStorage.removeItem(PK)}catch(x){}
+SYNC=d.ts||0;storeSync();DIRTY=false;const cm={x:C.x,z:C.z,yaw:C.yaw,dist:C.dist};try{loadProf()}catch(x){}init(false);C.x=cm.x;C.z=cm.z;C.yaw=cm.yaw;C.dist=cm.dist;say('🔄 Bandar dikemas kini daripada peranti lain (kedudukan bangunan disegerakkan).')}
+async function cloudPoll(){if(!TOK||!window.__user||!S||!navigator.onLine||document.hidden||CBUSY||CPOLL)return;CPOLL=true;
+try{const d=await api('/api/save');if(d.exists&&d.ts!==SYNC){if(DIRTY)cloudNow();else adopt(d)}}catch(er){if(er.status===401){TOK='';try{localStorage.removeItem('bb_token')}catch(x){}location.reload()}}CPOLL=false}
+setInterval(cloudPoll,15000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)cloudPoll()});addEventListener('focus',cloudPoll);
 function cloudPush(){if(!TOK||CPT)return;CPT=setTimeout(()=>{CPT=null;cloudNow()},15000)}
 addEventListener('pagehide',cloudNow);document.addEventListener('visibilitychange',()=>{if(document.hidden)cloudNow()});
 let entered=false;
