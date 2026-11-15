@@ -5,6 +5,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0a1c28">
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Bina%20Bandar%203D%22%2C%22short_name%22%3A%22Bina%20Bandar%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22fullscreen%22%2C%22orientation%22%3A%22landscape%22%2C%22background_color%22%3A%22%230a1c28%22%2C%22theme_color%22%3A%22%230a1c28%22%7D">
 <title>Bina Bandar 3D</title>
 <style>
 :root{--g:rgba(10,28,40,.8);--tx:#eef6f9;--mut:#9dbac6;--ac:#3cc4cf;--gold:#f2b94b;--bad:#ff7a6b;--ok:#5fd68f;box-sizing:border-box}
@@ -107,19 +108,27 @@ html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;-webk
 #bs{grid-template-columns:repeat(auto-fit,minmax(96px,1fr))}
 #lbody{max-height:94vh;max-height:94dvh}
 }
+#auth{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:16px;background:linear-gradient(160deg,#0d2a3c,#143445 60%,#0a1c28);overflow:auto}
+#auth .card{background:#143445;border:1px solid #2c5568;border-radius:14px;padding:20px;width:100%;max-width:380px}
+#auth h2{margin:0 0 6px}#auth p{margin:6px 0;font-size:.84rem}
+#auth .b{margin:4px 4px 0 0}#auth .pri{border-color:var(--gold)}
+#auth .ok{color:var(--ok)}#auth .er{color:var(--bad)}
 </style></head>
 <body>
 <canvas id="cv"></canvas>
 <div id="vpanel"></div><div id="top"></div><div id="toast"></div><div id="upbar"></div>
 <div id="side"><button class="b" id="rl" aria-label="Putar kiri">⟲</button><button class="b" id="rr" aria-label="Putar kanan">⟳</button><button class="b" id="spd"></button><button class="b" id="tx"></button><button class="b" id="vup">🚌 Kenderaan<small>naik taraf</small></button><button class="b" id="bud">🛍️ Bajet Rakyat<small>belian pintar</small></button><button class="b" id="sr">📮 Suara Rakyat<small>kotak aduan</small></button><button class="b" id="eco">🧾 Gaji &amp; Cukai<small>tetapan presiden</small></button><button class="b" id="pinfo">ℹ️ Info Swasta<small>untung &amp; pekerja</small></button><button class="b" id="menteri">📊 Menteri Perangkaan<small>kadar pengangguran</small></button><button class="b" id="keamanan">🚓 Menteri Keamanan<small>saman, bayaran &amp; balai</small></button><button class="b" id="jpj">🪪 JPJ<small>plat kenderaan</small></button><button class="b" id="adv"></button><button class="b" id="fest">🎉<small>RM5,000</small></button><button class="b" id="bank">🏦 Pinjaman<small>bank negara</small></button><button class="b" id="grd">⚡ Jaringan<small>liputan listrik</small></button><button class="b" id="fs">⛶ Skrin penuh<small>tekan F</small></button><button class="b" id="set">⚙️ Tetapan<small>reset game di sini</small></button><button class="b" id="end">⏭ Hari seterusnya</button></div>
 <div id="bar"><button class="b" id="bto">▾ Sembunyi menu bina</button><div id="bs"><select class="bsel" id="selR" aria-label="Jalan"></select><select class="bsel" id="selH" aria-label="Jenis Rumah"></select><select class="bsel" id="selA" aria-label="Aset Negara"></select><select class="bsel" id="selE" aria-label="Elektrik"></select><select class="bsel" id="selF" aria-label="Makanan dan Pertanian"></select><select class="bsel" id="selP" aria-label="Perniagaan"></select><select class="bsel" id="selD" aria-label="Hiasan"></select><select class="bsel" id="selB" aria-label="Bangunan"></select><select class="bsel" id="selV" aria-label="Kenderaan"></select><select class="bsel" id="selS" aria-label="Stesen"></select></div><div id="bt"></div></div>
+<div id="auth"><div class="card"><p>Memuatkan…</p></div></div>
 <div id="tag"></div>
 <div id="ghost"></div>
 <div id="lp"><div id="lbody"></div></div>
 <div id="ov"><div><h2 id="ot"></h2><p id="om"></p><button class="b" id="again">Teruskan bermain</button></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script>
-const PK='bina_bandar_3d_profile_v1';let PROF={pres:'',country:''},profMode=null;
+let PK='bina_bandar_3d_profile_v1';let PROF={pres:'',country:''},profMode=null;
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),title=()=>'Presiden '+(PROF.pres||'');
 function loadProf(){try{const d=JSON.parse(localStorage.getItem(PK)||'null');if(d&&d.pres&&d.country){PROF={pres:String(d.pres).slice(0,24),country:String(d.country).slice(0,30)};document.title=PROF.country+' · Bina Bandar 3D';return true}}catch(e){}return false}
 function saveProf(){try{localStorage.setItem(PK,JSON.stringify(PROF))}catch(e){}document.title=PROF.country+' · Bina Bandar 3D'}
@@ -914,9 +923,9 @@ if(tv.z>1){g.style.display='none';return}
 g.style.display='block';g.style.left=Math.round((tv.x*.5+.5)*innerWidth)+'px';g.style.top=Math.round((-tv.y*.5+.5)*innerHeight)+'px'}
 const L=t=>S.g.reduce((a,b,i)=>a+(b&&b.t===t&&(!NEED.has(t)||S.pw[i])?b.l:0),0);
 function init(fresh){tool=null;mv=null;hideInfo();selUI();clearHover();if(fresh){PROF={pres:'',country:''};try{localStorage.removeItem(PK)}catch(e){}}S={coin:20000,pop:0,food:0,sat:50,pol:0,turn:1,g:Array(N*N).fill(null),pt:5,ht:.2,gw:60,bt:50,mw:40,next:4,ever:false,over:false,loans:[],pw:new Uint8Array(N*N),dark:0,t:0,nd:3,spd:1,walks:[],roads:[],lrts:[],monos:[],vh:[],vl:{},sw:{},sp:{},fare:0,sv:0,dm:1,bj:null,cars:0,cf:0,warn:{}};const rs=fresh?(clearSave(),false):load();for(let i=0;i<N*N;i++)sync(i,true);calc();$('ov').classList.remove('show');$('again').textContent='Teruskan bermain';$('lp').classList.remove('show');hud();if(rs&&(S.turn>1||S.g.some(Boolean))){if(!PROF.pres)profForm(false);const dy=catchUp();if(S.over)return;S.spd=1;spdUI();return say('💾 Simpanan dimuatkan: '+DS(S.turn)+'.'+(dy?' ⏳ '+dy+' hari berlalu semasa anda pergi (masa terus berjalan).':' Game diteruskan, bukan dari awal.'))}
-if(!PROF.pres)return profForm(false);welcome()}
+S.spd=1;if(!PROF.pres)return profForm(false);welcome()}
 function welcome(){say('Selamat memimpin '+PROF.country+', '+title()+'! Pilih item di menu bawah, kemudian KLIK petak di peta untuk membina (atau seret). Klik bangunan untuk lihat namanya. Tetapkan gaji dan cukai di butang 🧾 Gaji & Cukai. Bina Solar atau Petrol dulu (menu ⚡ Elektrik): rumah, pasar, sekolah, RS dan pabrik di luar liputan listrik tidak berfungsi (ditandai bulatan merah).')}
-const SK='bina_bandar_3d_save_v1';
+let SK='bina_bandar_3d_save_v1';
 function clearSave(){try{localStorage.removeItem(SK)}catch(e){}}
 function save(){if(!S||S.over)return;try{const g=[];S.g.forEach((c,i)=>{if(c)g.push([i,c.t,c.l,c.r||0,c.m?1:0,c.z|0,c.u||0,c.v||0,c.q||0,c.w?1:0])});localStorage.setItem(SK,JSON.stringify({v:1,coin:S.coin,pop:S.pop,food:S.food,sat:S.sat,turn:S.turn,pt:S.pt,ht:S.ht,gw:S.gw,bt:S.bt,mw:S.mw,next:S.next,ever:S.ever,loans:S.loans,t:S.t,nd:S.nd,spd:S.spd,cv:2,vh:S.vh,vl:S.vl,sw:S.sw,fare:S.fare,rides:S.rides||0,vis:S.vis||0,rich:S.rich||0,sv:S.sv||0,cars:S.cars||0,cf:S.cf||0,dm:S.dm==null?1:S.dm,wall:Date.now(),w:S.warn,sm:S.sm||null,jp:S.jpj||null,g,cam:{x:C.x,z:C.z,yaw:C.yaw,dist:C.dist}}))}catch(e){}}
 function load(){try{const d=JSON.parse(localStorage.getItem(SK)||'null');if(!d||typeof d!=='object')return false;const n=(v,f)=>Number.isFinite(v)?v:f;
@@ -1023,7 +1032,7 @@ addEventListener('pointerup',e=>{if(!dg||e.pointerId!==dg.id)return;const d=dg;d
 if(d.on){const p=fp(e);if(document.elementFromPoint(p.clientX,p.clientY)===cv){const i=pick(p);if(i>=0)click(i)}clearHover()}
 else{const off=tool===d.t;setTool(off?null:d.t);if(off)clearHover();hud();say(off?'Mod biasa: tiada item dipilih.':d.label+' dipilih. KLIK petak di peta untuk membina. Klik item ini lagi atau tekan Esc untuk batal.')}});
 addEventListener('pointercancel',e=>{if(dg&&e.pointerId===dg.id){dg=null;$('ghost').style.display='none';clearHover()}});
-function settings(ask){$('lbody').innerHTML='<h2>⚙️ Tetapan</h2>'+(ask?'<p>Pasti mahu reset? Semua kemajuan (Hari '+S.turn+', '+S.pop+' penduduk, kas '+rm(S.coin)+') akan dipadam dan game bermula dari awal. Tindakan ini tidak boleh dibatalkan.</p><button class="b" data-a="newgo" style="border-color:var(--bad)">Ya, reset sekarang</button> <button class="b" data-a="settings">Batal</button>':'<p class="mut">Game tidak akan reset sendiri, walaupun anda mencapai kecemerlangan atau kehabisan kas. Satu-satunya pengecualian: hutang bank yang tidak dilunaskan sebelum tarikh akhir menamatkan game. Reset hanya berlaku apabila butang di bawah ditekan.</p><button class="b" data-a="editprof">✏️ Tukar nama / negara<small>'+esc(title())+' · '+esc(PROF.country)+'</small></button> <button class="b" data-a="resetask" style="border-color:var(--bad)">🔄 Reset Game<small>padam simpanan, mula dari awal</small></button> <button class="b" data-a="close">Tutup</button>');$('lp').classList.add('show')}
+function settings(ask){$('lbody').innerHTML='<h2>⚙️ Tetapan</h2>'+(ask?'<p>Pasti mahu reset? Semua kemajuan (Hari '+S.turn+', '+S.pop+' penduduk, kas '+rm(S.coin)+') akan dipadam dan game bermula dari awal. Tindakan ini tidak boleh dibatalkan.</p><button class="b" data-a="newgo" style="border-color:var(--bad)">Ya, reset sekarang</button> <button class="b" data-a="settings">Batal</button>':'<p class="mut">Game tidak akan reset sendiri, walaupun anda mencapai kecemerlangan atau kehabisan kas. Satu-satunya pengecualian: hutang bank yang tidak dilunaskan sebelum tarikh akhir menamatkan game. Reset hanya berlaku apabila butang di bawah ditekan.</p><button class="b" data-a="editprof">✏️ Tukar nama / negara<small>'+esc(title())+' · '+esc(PROF.country)+'</small></button> <button class="b" data-a="chpw">🔑 Tukar kata laluan<small>pautan dihantar ke emel</small></button> <button class="b" data-a="logout">🚪 Log keluar<small>'+esc((window.__user&&window.__user.email)||'')+'</small></button> <button class="b" data-a="resetask" style="border-color:var(--bad)">🔄 Reset Game<small>padam simpanan, mula dari awal</small></button> <button class="b" data-a="close">Tutup</button>');$('lp').classList.add('show')}
 $('set').onclick=()=>settings();
 $('tx').onclick=()=>{if(!S.over)eco()};
 $('end').onclick=()=>{if(S.over)return;S.t=S.nd;S.nd+=3;end()};
@@ -1031,7 +1040,7 @@ $('grd').onclick=()=>{showGrid=!showGrid;hud()};
 /* ---------- nama presiden & negara ---------- */
 function profForm(edit){profMode=edit?'edit':'new';$('lbody').innerHTML='<h2>🏳️ '+(edit?'Tukar nama':'Selamat datang, Pemimpin!')+'</h2><p class="mut">'+(edit?'Ubah nama anda atau nama negara.':'Sebelum memulakan, isi nama anda untuk dipanggil sebagai Presiden dan beri nama kepada negara anda.')+'</p><label class="fld">Nama anda (dipanggil Presiden)<input id="pn" maxlength="24" autocomplete="off" placeholder="cth: Ahmad" value="'+esc(PROF.pres)+'"></label><label class="fld">Nama negara<input id="cn" maxlength="30" autocomplete="off" placeholder="cth: Republik Nusantara" value="'+esc(PROF.country)+'"></label><p class="msg" id="pm"></p><button class="b" id="pgo" data-a="startgame" style="border-color:var(--gold)">'+(edit?'💾 Simpan':'🚀 Mula memimpin')+'</button>'+(edit?' <button class="b" data-a="settings">Batal</button>':'');$('lp').classList.add('show');setTimeout(()=>$('pn').focus(),60)}
 function startGame(){const f=x=>$(x).value.replace(/\s+/g,' ').trim(),p=f('pn'),c=f('cn');if(!p){$('pm').textContent='Sila isi nama anda.';return $('pn').focus()}if(!c){$('pm').textContent='Sila beri nama kepada negara anda.';return $('cn').focus()}
-const nw=profMode==='new';PROF={pres:p,country:c};saveProf();profMode=null;$('lp').classList.remove('show');hud();if(nw)welcome();else say('Nama dikemas kini: '+title()+' dari '+PROF.country+'.')}
+const nw=profMode==='new';if(nw){S.spd=1;S.t=0;S.nd=3;lastW=Date.now()}PROF={pres:p,country:c};saveProf();profMode=null;$('lp').classList.remove('show');hud();if(nw)welcome();else say('Nama dikemas kini: '+title()+' dari '+PROF.country+'.')}
 $('lp').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.tagName==='INPUT'){e.preventDefault();if(e.target.id==='pn'&&!$('cn').value.trim())$('cn').focus();else if(e.target.id==='la')$('ptake').click();else $('pgo').click()}});
 /* ---------- menu bina: sembunyi/tunjuk ---------- */
 $('bto').onclick=()=>{const c=$('bar').classList.toggle('col');$('bto').textContent=c?'▴ Tunjuk menu bina':'▾ Sembunyi menu bina'};
@@ -1161,6 +1170,8 @@ else if(a==='sgtool'){setTool(b.dataset.tool);$('lp').classList.remove('show');h
 else if(a==='ecoopen'){eco()}else if(a==='eco'){const k=b.dataset.k;if(!WSTEP[k])return;S[k]=Math.round(clamp(S[k]+(+b.dataset.v)*WSTEP[k],0,WMAX[k])*100)/100;calc();hud();eco()}
 else if(a==='settax'){S.pt=clamp(+b.dataset.v,0,50);calc();hud();adv('tax','Cukai pendapatan ditukar ke '+S.pt+'% setahun.')}
 else if(a==='vdir'){const t=b.dataset.k,i=+b.dataset.i,d=+b.dataset.d,bb=B[t];$('lp').classList.remove('show');if(!VT[t]||!S.g[i]||!trk(i,VT[t].net)||!nbrs(i,VT[t].net).includes(d))return say(VT[t]?VT[t].msg:'Tidak sah.');if(S.vh.filter(x=>x.k===t).length>=15)return say('Maksimum 15 '+bb[1]+'.');if(S.coin<bb[2])return say('Kas kurang. '+bb[1]+' butuh '+rm(bb[2])+'.');S.coin-=bb[2];S.vh.push({k:t,i,d});calc();hud();say(bb[0]+' '+bb[1]+' mula beroperasi ke arah dipilih (-'+rm(bb[2])+').')}
+else if(a==='chpw')authChange()
+else if(a==='logout')authOut()
 else if(a==='newgo')init(true)
 else if(a==='editprof')profForm(true)
 else if(a==='startgame')startGame()
@@ -1245,12 +1256,33 @@ $('vup').onclick=()=>{const o=$('vpanel');if(o.style.display==='block'){o.style.
 $('vpanel').onclick=e=>{const b=e.target.closest('[data-v]');if(!b||!S)return;const k=b.dataset.v;if(k==='x'){$('vpanel').style.display='none';return}
 if(S.over||!VT[k])return;const lv=vlv(k);if(lv>=VMAX)return;const c=vCost(k);if(S.coin<c)return say('Kas kurang. Naik taraf '+B[k][1]+' butuh '+rm(c)+'.');
 S.coin-=c;S.vl=S.vl||{};S.vl[k]=lv+1;calc();hud();save();vpUI(true);say(B[k][0]+' '+B[k][1]+' naik ke Lv '+(lv+1)+' (-'+rm(c)+'). Pendapatan & laju meningkat.')};
-size();buildSel();loadProf();init();rz();requestAnimationFrame(loop);
-/* ---------- auto skrin penuh pada sentuhan pertama (pelayar mewajibkan gerakan pengguna) ---------- */
-(function(){const d=document,el=d.documentElement,rq=el.requestFullscreen||el.webkitRequestFullscreen;if(!rq||d.fullscreenElement||d.webkitFullscreenElement)return;
-let done=false;const evs=['pointerup','touchend','click','keydown'];
-function go(e){if(done)return;if(e&&e.type==='keydown'&&/^(Shift|Control|Alt|Meta)$/.test(e.key))return;done=true;evs.forEach(n=>removeEventListener(n,go,true));
-try{const r=rq.call(el,{navigationUI:'hide'});if(r&&r.then)r.then(()=>{try{if(screen.orientation&&screen.orientation.lock)screen.orientation.lock('landscape').catch(()=>{})}catch(x){}}).catch(()=>{})}catch(x){}}
-evs.forEach(n=>addEventListener(n,go,true))})();
+
+/* ---------- log masuk: emel + kata laluan (Firebase Authentication); game hanya boleh dibuka dalam talian ---------- */
+/* ISI config projek Firebase anda di sini (Firebase Console → Project settings → Your apps → Web) */
+const AUTH_CFG={apiKey:'ISI_API_KEY',authDomain:'ISI_PROJEK.firebaseapp.com',projectId:'ISI_PROJEK',appId:'ISI_APP_ID'};
+let AU=null;
+function authMsg(c){const m={'auth/invalid-credential':'Emel atau kata laluan salah.','auth/wrong-password':'Emel atau kata laluan salah.','auth/user-not-found':'Emel atau kata laluan salah.','auth/invalid-email':'Format emel tidak sah.','auth/too-many-requests':'Terlalu banyak cubaan. Cuba lagi sebentar lagi.','auth/network-request-failed':'Tiada sambungan internet.','auth/user-disabled':'Akaun ini dilumpuhkan.','auth/unauthorized-domain':'Domain ini belum dibenarkan di Firebase (Authorized domains).'};return m[c]||('Ralat: '+c)}
+function authForm(msg,cls){const e=(document.getElementById('ae')||{}).value||'';$('auth').innerHTML='<div class="card"><h2>🏙️ Bina Bandar 3D</h2><p class="mut">Log masuk untuk bermain. Memerlukan sambungan internet.</p><label class="fld">Emel<input id="ae" type="email" autocomplete="username" inputmode="email" placeholder="nama@emel.com" value="'+esc(e)+'"></label><label class="fld">Kata laluan<input id="ap" type="password" autocomplete="current-password" placeholder="Kata laluan"></label><p class="'+(cls||'er')+'" id="am" style="min-height:1.2em">'+esc(msg||'')+'</p><button class="b pri" data-x="in">🔓 Log masuk</button><button class="b" data-x="send">📧 Daftar / lupa kata laluan</button><p class="mut" style="font-size:.74rem">Akaun baharu atau terlupa kata laluan: masukkan emel, tekan “Daftar / lupa kata laluan”, kemudian buka emel dan klik pautan untuk menetapkan kata laluan sementara anda. Kata laluan boleh ditukar semula di ⚙️ Tetapan.</p></div>';$('auth').style.display='flex'}
+function tmpPw(){const a=new Uint8Array(18);crypto.getRandomValues(a);return Array.from(a,x=>'abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'[x%56]).join('')+'!9'}
+async function authSend(email){try{await AU.createUserWithEmailAndPassword(email,tmpPw());}catch(e){if(e.code!=='auth/email-already-in-use')throw e}
+await AU.sendPasswordResetEmail(email);if(AU.currentUser)await AU.signOut()}
+$('auth').addEventListener('click',async e=>{const b=e.target.closest('[data-x]');if(!b||!AU)return;const x=b.dataset.x,em=($('ae')||{}).value?$('ae').value.trim():'',pw=($('ap')||{}).value||'',m=$('am');
+if(!navigator.onLine)return authForm('Tiada sambungan internet.');
+if(x==='net')return;
+if(!em)return authForm('Sila isi emel.');
+b.disabled=true;try{if(x==='in'){if(!pw)return authForm('Sila isi kata laluan.');await AU.signInWithEmailAndPassword(em,pw)}
+else if(x==='send'){m.className='mut';m.textContent='Menghantar emel…';await authSend(em);authForm('Emel dihantar ke '+em+'. Klik pautan dalam emel (semak folder spam) untuk menetapkan kata laluan, kemudian log masuk di sini.','ok')}}
+catch(er){authForm(authMsg(er.code||String(er)))}});
+$('auth').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.tagName==='INPUT'){e.preventDefault();const b=document.querySelector('#auth [data-x="in"]');if(b)b.click()}});
+function authGate(start){const ok=AUTH_CFG.apiKey&&!/^ISI/.test(AUTH_CFG.apiKey);
+if(!ok||typeof firebase==='undefined'){$('auth').innerHTML='<div class="card"><h2>🔐 Log masuk belum disediakan</h2><p>'+(typeof firebase==='undefined'?'Perkhidmatan log masuk gagal dimuatkan. Semak sambungan internet dan muat semula halaman.':'Config Firebase belum diisi dalam fail index.html (AUTH_CFG).')+'</p></div>';return}
+let started=false;try{firebase.initializeApp(AUTH_CFG);AU=firebase.auth()}catch(e){$('auth').innerHTML='<div class="card"><h2>⚠️ Ralat</h2><p>'+esc(e.message||e)+'</p></div>';return}
+const net=()=>{if(!started)return;if(!navigator.onLine){$('auth').innerHTML='<div class="card"><h2>📡 Tiada internet</h2><p>Game ini hanya boleh dimainkan dalam talian. Sambungkan semula internet untuk terus bermain.</p></div>';$('auth').style.display='flex'}else $('auth').style.display='none'};
+addEventListener('offline',net);addEventListener('online',net);
+AU.onAuthStateChanged(u=>{if(u){$('auth').style.display='none';window.__user=u;if(!started){started=true;const k='_'+u.uid;try{const mg=(a,b)=>{if(localStorage.getItem(b)===null&&localStorage.getItem(a)!==null&&!localStorage.getItem('bb_migrated')){localStorage.setItem(b,localStorage.getItem(a))}};mg(PK,PK+k);mg(SK,SK+k);localStorage.setItem('bb_migrated','1')}catch(x){}PK+=k;SK+=k;start();if(!navigator.onLine)net()}}else{if(started){location.reload();return}authForm('')}})}
+function authOut(){if(AU)AU.signOut().then(()=>location.reload())}
+function authChange(){const u=AU&&AU.currentUser;if(!u)return;AU.sendPasswordResetEmail(u.email).then(()=>{$('lp').classList.remove('show');say('📧 Pautan tukar kata laluan dihantar ke '+u.email+'.')}).catch(e=>say(authMsg(e.code||String(e))))}
+size();buildSel();authGate(()=>{loadProf();init();rz();requestAnimationFrame(loop)});
+
 
 </script></body></html>
