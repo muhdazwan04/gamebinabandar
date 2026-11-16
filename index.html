@@ -1286,7 +1286,7 @@ function vdirUI(i,t,nb){const lab=j=>{const dx=j%N-i%N,dz=Math.floor(j/N)-Math.f
 $('lbody').innerHTML='<h2>'+B[t][0]+' '+B[t][1]+'</h2><p class="mut">Pilih arah perjalanan kenderaan ini. Kos '+rm(B[t][2])+'.</p>'+nb.map(j=>{const l=lab(j);return '<div class="ln"><span>'+l[0]+'<small>'+l[1]+'</small></span><button class="b" data-a="vdir" data-k="'+t+'" data-i="'+i+'" data-d="'+j+'">Letak</button></div>'}).join('')+'<button class="b" data-a="close">Batal</button>';$('lp').classList.add('show')}
 function pairOf(i){const c=S.g[i];if(!c||(c.t!=='stlrt'&&c.t!=='stmono'))return -1;const r=c.r||0,j=dirN(i,r);if(j<0||!trk(j,STN[c.t]))return -1;const k=dirN(j,r),d=k>=0&&S.g[k];return d&&d.t===c.t&&(d.r||0)===(r+2)%4?k:-1}
 function event(m){if(Math.random()<.5){S.coin+=20000;m.push('🤝 INVESTOR menyumbang '+rm(20000)+'!')}else{S.sat+=10;m.push('🎉 FESTIVAL! Rakyat bergembira.')}}
-function end(){if(S.over||VISIT)return;calc();const d=S.d,m=[];S.coin+=d.inc;m.push('💰 '+(d.inc>=0?'+':'-')+rm(Math.abs(d.inc)));if(S.e.gpay||S.e.btax)m.push('🧾 gaji kerajaan -'+rm(S.e.gpay)+', cukai perniagaan +'+rm(S.e.btax));let unpaid=false;if(S.coin<0&&S.e.gpay>0){unpaid=true;m.push('⚠️ Kas kosong: gaji kakitangan kerajaan tertunggak!')}if(S.turn%YD===0){const it=taxInc(S.pt),ht=houseTaxYr();if(it>0){S.coin+=it;m.push('💸 Cukai pendapatan rakyat '+S.pt+'% setahun +'+rm(it))}if(ht>0){S.coin+=ht;m.push('🏠 Cukai rumah '+S.ht.toFixed(1)+'% setahun +'+rm(ht))}}S.food+=d.fp-d.fc;let sh=false;
+function end(){if(S.over)return;calc();const d=S.d,m=[];S.coin+=d.inc;m.push('💰 '+(d.inc>=0?'+':'-')+rm(Math.abs(d.inc)));if(S.e.gpay||S.e.btax)m.push('🧾 gaji kerajaan -'+rm(S.e.gpay)+', cukai perniagaan +'+rm(S.e.btax));let unpaid=false;if(S.coin<0&&S.e.gpay>0){unpaid=true;m.push('⚠️ Kas kosong: gaji kakitangan kerajaan tertunggak!')}if(S.turn%YD===0){const it=taxInc(S.pt),ht=houseTaxYr();if(it>0){S.coin+=it;m.push('💸 Cukai pendapatan rakyat '+S.pt+'% setahun +'+rm(it))}if(ht>0){S.coin+=ht;m.push('🏠 Cukai rumah '+S.ht.toFixed(1)+'% setahun +'+rm(ht))}}S.food+=d.fp-d.fc;let sh=false;
 if(S.food<0){S.food=0;sh=true;m.push('🌾 Pangan habis!')}
 if(S.pop>0&&d.ep-d.ec<0){sh=true;m.push('⚡ Energi kurang!')}
 const bj=buyDay(m);{const st=stats();if(st.pop>=10&&st.ur>=10)m.push('📊 Menteri Perangkaan: pengangguran '+st.ur.toFixed(1)+'% ('+st.un+' orang). Buka laporan untuk cadangan.')}let t=tgt(S.pt,sh);S.sat=Math.round(S.sat+(t-S.sat)*.35+bj.sat)-(unpaid?8:0);
@@ -1392,15 +1392,13 @@ if(!sv||typeof sv!=='object'||!Array.isArray(sv.g))return msg('Rekod bandar pema
 try{
 if(!VISIT){save();cloudNow()}
 if(VISIT&&VISIT.iv)clearInterval(VISIT.iv);
-sv.cv=2;sv.spd=180;delete sv.wall;
 SK='bb_visit_tmp';localStorage.setItem(SK,JSON.stringify(sv));
 PROF={pres:String(pf.pres||'').slice(0,24)||'—',country:String(pf.country||'').slice(0,30)||('Bandar #'+d.pid)};
 VISIT={pid:d.pid,coin:0,iv:0};document.body.classList.add('visit');
 document.title=PROF.country+' · Bina Bandar 3D';
 $('lp').classList.remove('show');
 init(false);
-VISIT.coin=S.coin;VISIT.iv=setInterval(()=>{if(S)S.coin=VISIT.coin},250);
-hud();vbar();say('👁️ Melawat '+PROF.country+' (#'+d.pid+'). Mod lihat sahaja: anda boleh pusing & zum, ketuk bangunan untuk lihat nama.')
+hud();vbar();say('👁️ Melawat '+PROF.country+' (#'+d.pid+'). Masa & keadaan sama seperti akaun sebenar sekarang. Mod lihat sahaja.')
 }catch(x){location.reload()}}
 function vbar(){let e=$('vbar');if(!e){e=document.createElement('div');e.id='vbar';document.body.appendChild(e)}
 e.innerHTML='👁️ Melawat <b>'+esc(PROF.country)+'</b> · #'+VISIT.pid+' · Presiden '+esc(PROF.pres)+' <small style="color:var(--mut)">(lihat sahaja)</small> <button class="b" data-v2="other">🌍 Lawat nombor lain</button> <button class="b pri" data-v2="exit">🏠 Pulang ke bandar saya</button>'}
@@ -1545,7 +1543,7 @@ $('lp').classList.add('show')}
 $('bank').onclick=()=>{if(!S.over)bank()};
 $('lp').onchange=e=>{if(e.target.id!=='lt')return;LT=+e.target.value;bank()};
 $('lp').addEventListener('input',e=>{if(e.target.id!=='la')return;const v=parseInt(e.target.value.replace(/\D/g,'').slice(0,9),10)||0;LA=v;e.target.value=v||'';const o=$('lsum');if(o)o.innerHTML=lsm()});
-$('lp').onclick=e=>{if(e.target.id==='lp'){if(profMode==='new')return;$('lp').classList.remove('show');return}const b=e.target.closest('[data-a]');if(!b||S.over)return;const a=b.dataset.a;
+$('lp').onclick=e=>{if(e.target.id==='lp'){if(profMode==='new')return;$('lp').classList.remove('show');return}const b=e.target.closest('[data-a]');if(!b||S.over)return;const a=b.dataset.a;if(VISIT&&!/^(close|players|plist|pview|psort|lawat|lawatp)$/.test(a))return;
 if(a==='close')$('lp').classList.remove('show');
 else if(a==='take'){if(!(LA>=10000))return bank('Jumlah minimum pinjaman ialah RM10,000.');const ow=LA+Math.round(LA*LT*12/100);if(S.loans.reduce((s,l)=>s+l.owed,0)+ow>MAXD)return bank('Melebihi had hutang '+rm(MAXD)+'.');S.coin+=LA;S.loans.push({amt:LA,owed:ow,due:S.turn+LT*YD,nt:0});calc();hud();bank('Pinjaman '+rm(LA)+' diluluskan. Lunaskan sebelum '+DS(S.turn+LT*YD)+'.')}
 else if(a==='ask')adv(b.dataset.q)
@@ -1641,7 +1639,7 @@ function chg(){if(on())was=true;else if(was)stop=true}
 d.addEventListener('fullscreenchange',chg);d.addEventListener('webkitfullscreenchange',chg);
 ['pointerup','touchend','click','keydown'].forEach(t=>addEventListener(t,go,{passive:true}))})();
 addEventListener('keydown',e=>{if(/^(SELECT|INPUT|TEXTAREA)$/.test(e.target.tagName)||e.ctrlKey||e.metaKey||e.altKey)return;const k=e.key.toLowerCase();if(k==='arrowup'||k==='arrowdown'){e.preventDefault();C.dist=clamp(C.dist*(k==='arrowup'?.9:1.1),8,60)}else if(k==='f'){e.preventDefault();fsToggle()}else if(k==='escape'&&tool){setTool(null);clearHover();hud()}});
-$('again').onclick=()=>{if(S.over){clearSave();init()}else $('ov').classList.remove('show')};
+$('again').onclick=()=>{if(VISIT){try{localStorage.removeItem('bb_visit_tmp')}catch(x){}location.reload();return}if(S.over){clearSave();init()}else $('ov').classList.remove('show')};
 
 /* ---------- tab naik taraf kenderaan (kecil) ---------- */
 let vpKey='';
