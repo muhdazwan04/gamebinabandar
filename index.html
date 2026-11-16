@@ -190,6 +190,9 @@ html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;-webk
 #toast.on{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
 #lbody>h2+p.mut{display:none}
 #lbody p{font-size:.8rem}
+body.visit #side>button:not(#rl):not(#rr),body.visit #bar,body.visit #upbar,body.visit #vpanel,body.visit #more{display:none!important}
+#vbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:30;background:rgba(10,30,42,.94);border:1px solid var(--gold);border-radius:12px;padding:8px 12px;display:none;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;font-size:.8rem;max-width:94vw;color:var(--tx)}
+body.visit #vbar{display:flex}
 </style></head>
 <body>
 <canvas id="cv"></canvas>
@@ -217,7 +220,7 @@ el.addEventListener('click',bye)})();
 <div id="ov"><div><h2 id="ot"></h2><p id="om"></p><button class="b" id="again">Teruskan bermain</button></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-let PK='bina_bandar_3d_profile_v1';let PROF={pres:'',country:''},profMode=null;
+let VISIT=null;let PK='bina_bandar_3d_profile_v1';let PROF={pres:'',country:''},profMode=null;
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),title=()=>'Presiden '+(PROF.pres||'');
 function loadProf(){try{const d=JSON.parse(localStorage.getItem(PK)||'null');if(d&&d.pres&&d.country){PROF={pres:String(d.pres).slice(0,24),country:String(d.country).slice(0,30)};document.title=PROF.country+' · Bina Bandar 3D';return true}}catch(e){}return false}
 function saveProf(){try{localStorage.setItem(PK,JSON.stringify(PROF))}catch(e){}document.title=PROF.country+' · Bina Bandar 3D'}
@@ -1234,7 +1237,7 @@ S.spd=1;if(!PROF.pres)return profForm(false);welcome()}
 function welcome(){say('Selamat memimpin '+PROF.country+', '+title()+'! Pilih item di menu bawah, kemudian KLIK petak di peta untuk membina (atau seret). Klik bangunan untuk lihat namanya. Tetapkan gaji dan cukai di butang 🧾 Gaji & Cukai. Bina Solar atau Petrol dulu (menu ⚡ Elektrik): rumah, pasar, sekolah, RS dan pabrik di luar liputan listrik tidak berfungsi (ditandai bulatan merah).')}
 let SK='bina_bandar_3d_save_v1';
 function clearSave(){try{localStorage.removeItem(SK)}catch(e){}try{DIRTY=true;cloudPush()}catch(e){}}
-function save(){if(!S||S.over)return;try{const g=[];S.g.forEach((c,i)=>{if(c)g.push([i,c.t,c.l,c.r||0,c.m?1:0,c.z|0,c.u||0,c.v||0,c.q||0,c.w?1:0])});localStorage.setItem(SK,JSON.stringify({v:1,coin:S.coin,pop:S.pop,food:S.food,sat:S.sat,turn:S.turn,pt:S.pt,ht:S.ht,gw:S.gw,bt:S.bt,mw:S.mw,next:S.next,ever:S.ever,loans:S.loans,t:S.t,nd:S.nd,spd:S.spd,cv:2,vh:S.vh,vl:S.vl,sw:S.sw,fare:S.fare,rides:S.rides||0,vis:S.vis||0,rich:S.rich||0,sv:S.sv||0,cars:S.cars||0,cf:S.cf||0,dm:S.dm==null?1:S.dm,wall:Date.now(),w:S.warn,sm:S.sm||null,jp:S.jpj||null,g,cam:{x:C.x,z:C.z,yaw:C.yaw,dist:C.dist}}));cloudPush()}catch(e){}}
+function save(){if(!S||S.over||VISIT)return;try{const g=[];S.g.forEach((c,i)=>{if(c)g.push([i,c.t,c.l,c.r||0,c.m?1:0,c.z|0,c.u||0,c.v||0,c.q||0,c.w?1:0])});localStorage.setItem(SK,JSON.stringify({v:1,coin:S.coin,pop:S.pop,food:S.food,sat:S.sat,turn:S.turn,pt:S.pt,ht:S.ht,gw:S.gw,bt:S.bt,mw:S.mw,next:S.next,ever:S.ever,loans:S.loans,t:S.t,nd:S.nd,spd:S.spd,cv:2,vh:S.vh,vl:S.vl,sw:S.sw,fare:S.fare,rides:S.rides||0,vis:S.vis||0,rich:S.rich||0,sv:S.sv||0,cars:S.cars||0,cf:S.cf||0,dm:S.dm==null?1:S.dm,wall:Date.now(),w:S.warn,sm:S.sm||null,jp:S.jpj||null,g,cam:{x:C.x,z:C.z,yaw:C.yaw,dist:C.dist}}));cloudPush()}catch(e){}}
 function load(){try{const d=JSON.parse(localStorage.getItem(SK)||'null');if(!d||typeof d!=='object')return false;const n=(v,f)=>Number.isFinite(v)?v:f;
 S.coin=n(d.coin,S.coin);S.pop=Math.max(0,n(d.pop,0));S.food=Math.max(0,n(d.food,0));S.sv=Math.max(0,n(d.sv,0));S.cars=Math.max(0,n(d.cars,0));S.cf=clamp(n(d.cf,0),0,1);S.dm=clamp(n(d.dm,1),.4,1);S.sat=clamp(n(d.sat,50),0,100);S.turn=Math.max(1,n(d.turn,1));S.pt=clamp(n(d.pt,5),0,50);S.ht=clamp(n(d.ht,.2),0,2);S.gw=clamp(n(d.gw,60),0,300);S.bt=clamp(n(d.bt,50),0,90);S.mw=clamp(n(d.mw,40),0,300);S.next=n(d.next,4);S.warn=(d.w&&typeof d.w==='object')?d.w:{};S.ever=!!d.ever;S.wall=n(d.wall,0);S.t=Math.max(0,n(d.t,0));S.nd=n(d.nd,3);if(!(S.nd>S.t))S.nd=(Math.floor(S.t/3)+1)*3;S.spd=d.cv===2?(SP.includes(d.spd)?d.spd:180):(({1:180,2:360,4:720,0:0})[d.spd]??180);
 S.loans=Array.isArray(d.loans)?d.loans.filter(l=>l&&Number.isFinite(l.owed)&&Number.isFinite(l.due)).map(l=>({amt:n(l.amt,0),owed:l.owed,due:l.due,nt:l.nt?1:0})):[];
@@ -1283,7 +1286,7 @@ function vdirUI(i,t,nb){const lab=j=>{const dx=j%N-i%N,dz=Math.floor(j/N)-Math.f
 $('lbody').innerHTML='<h2>'+B[t][0]+' '+B[t][1]+'</h2><p class="mut">Pilih arah perjalanan kenderaan ini. Kos '+rm(B[t][2])+'.</p>'+nb.map(j=>{const l=lab(j);return '<div class="ln"><span>'+l[0]+'<small>'+l[1]+'</small></span><button class="b" data-a="vdir" data-k="'+t+'" data-i="'+i+'" data-d="'+j+'">Letak</button></div>'}).join('')+'<button class="b" data-a="close">Batal</button>';$('lp').classList.add('show')}
 function pairOf(i){const c=S.g[i];if(!c||(c.t!=='stlrt'&&c.t!=='stmono'))return -1;const r=c.r||0,j=dirN(i,r);if(j<0||!trk(j,STN[c.t]))return -1;const k=dirN(j,r),d=k>=0&&S.g[k];return d&&d.t===c.t&&(d.r||0)===(r+2)%4?k:-1}
 function event(m){if(Math.random()<.5){S.coin+=20000;m.push('🤝 INVESTOR menyumbang '+rm(20000)+'!')}else{S.sat+=10;m.push('🎉 FESTIVAL! Rakyat bergembira.')}}
-function end(){if(S.over)return;calc();const d=S.d,m=[];S.coin+=d.inc;m.push('💰 '+(d.inc>=0?'+':'-')+rm(Math.abs(d.inc)));if(S.e.gpay||S.e.btax)m.push('🧾 gaji kerajaan -'+rm(S.e.gpay)+', cukai perniagaan +'+rm(S.e.btax));let unpaid=false;if(S.coin<0&&S.e.gpay>0){unpaid=true;m.push('⚠️ Kas kosong: gaji kakitangan kerajaan tertunggak!')}if(S.turn%YD===0){const it=taxInc(S.pt),ht=houseTaxYr();if(it>0){S.coin+=it;m.push('💸 Cukai pendapatan rakyat '+S.pt+'% setahun +'+rm(it))}if(ht>0){S.coin+=ht;m.push('🏠 Cukai rumah '+S.ht.toFixed(1)+'% setahun +'+rm(ht))}}S.food+=d.fp-d.fc;let sh=false;
+function end(){if(S.over||VISIT)return;calc();const d=S.d,m=[];S.coin+=d.inc;m.push('💰 '+(d.inc>=0?'+':'-')+rm(Math.abs(d.inc)));if(S.e.gpay||S.e.btax)m.push('🧾 gaji kerajaan -'+rm(S.e.gpay)+', cukai perniagaan +'+rm(S.e.btax));let unpaid=false;if(S.coin<0&&S.e.gpay>0){unpaid=true;m.push('⚠️ Kas kosong: gaji kakitangan kerajaan tertunggak!')}if(S.turn%YD===0){const it=taxInc(S.pt),ht=houseTaxYr();if(it>0){S.coin+=it;m.push('💸 Cukai pendapatan rakyat '+S.pt+'% setahun +'+rm(it))}if(ht>0){S.coin+=ht;m.push('🏠 Cukai rumah '+S.ht.toFixed(1)+'% setahun +'+rm(ht))}}S.food+=d.fp-d.fc;let sh=false;
 if(S.food<0){S.food=0;sh=true;m.push('🌾 Pangan habis!')}
 if(S.pop>0&&d.ep-d.ec<0){sh=true;m.push('⚡ Energi kurang!')}
 const bj=buyDay(m);{const st=stats();if(st.pop>=10&&st.ur>=10)m.push('📊 Menteri Perangkaan: pengangguran '+st.ur.toFixed(1)+'% ('+st.un+' orang). Buka laporan untuk cadangan.')}let t=tgt(S.pt,sh);S.sat=Math.round(S.sat+(t-S.sat)*.35+bj.sat)-(unpaid?8:0);
@@ -1352,7 +1355,7 @@ addEventListener('pointercancel',e=>{if(dg&&e.pointerId===dg.id){dg=null;$('ghos
 function settings(ask){$('lbody').innerHTML='<h2>⚙️ Tetapan</h2>'+(window.__user&&window.__user.pid?'<p>🆔 Nombor pemain anda: <b>#'+esc(window.__user.pid)+'</b><br><small class="mut">Pemain lain nampak nombor ini, bukan ID log masuk anda.</small></p>':'')+(ask?'<p>Pasti mahu reset? Semua kemajuan (Hari '+S.turn+', '+S.pop+' penduduk, kas '+rm(S.coin)+') akan dipadam dan game bermula dari awal. Tindakan ini tidak boleh dibatalkan.</p><button class="b" data-a="newgo" style="border-color:var(--bad)">Ya, reset sekarang</button> <button class="b" data-a="settings">Batal</button>':'<p class="mut">Game tidak akan reset sendiri, walaupun anda mencapai kecemerlangan atau kehabisan kas. Satu-satunya pengecualian: hutang bank yang tidak dilunaskan sebelum tarikh akhir menamatkan game. Reset hanya berlaku apabila butang di bawah ditekan.</p><button class="b" data-a="editprof">✏️ Tukar nama / negara<small>'+esc(title())+' · '+esc(PROF.country)+(myPid()?' · '+esc(myPid()):'')+'</small></button> <button class="b" data-a="chpw">🔑 Tukar kata laluan<small>ID kekal sama</small></button> <button class="b" data-a="logout">🚪 Log keluar<small>'+esc((window.__user?window.__user.id:'')||'')+'</small></button> <button class="b" data-a="resetask" style="border-color:var(--bad)">🔄 Reset Game<small>padam simpanan, mula dari awal</small></button> <button class="b" data-a="close">Tutup</button>');$('lp').classList.add('show')}
 $('set').onclick=()=>settings();
 /* ---------- Pemain lain: nombor ID & kemajuan bandar ---------- */
-const myPid=()=>window.__user&&window.__user.pid?'#'+window.__user.pid:'';
+const myPid=()=>VISIT?'#'+VISIT.pid:(window.__user&&window.__user.pid?'#'+window.__user.pid:'');
 let PL=[],PSORT='pop',PQ='';
 const PROAD={jalan:1,jalan4:1,jalan8:1,laluan:1,lrt:1,mono:1};
 const pAgo=t=>{const s=Math.max(0,(Date.now()-t)/1000);return s<90?'baru sahaja':s<3600?Math.floor(s/60)+' minit lalu':s<86400?Math.floor(s/3600)+' jam lalu':Math.floor(s/86400)+' hari lalu'};
@@ -1363,7 +1366,7 @@ try{const d=await api('/api/players');PL=d.players||[];if(d.myPid&&window.__user
 catch(er){$('lbody').innerHTML='<h2>🌍 Pemain Lain</h2><p class="er">'+esc(er.message)+'</p><button class="b" data-a="players">🔄 Cuba lagi</button> <button class="b" data-a="close">Tutup</button>'}}
 function plist(){
 const sb=(k,t)=>'<button class="b" data-a="psort" data-k="'+k+'"'+(PSORT===k?' style="border-color:var(--gold)"':'')+'>'+t+'</button> ';
-$('lbody').innerHTML='<h2>🌍 Pemain Lain</h2><p class="mut"><b>'+PL.length+'</b> bandar. Setiap pemain ada nombor tersendiri'+(window.__user&&window.__user.pid?' (nombor anda: <b>#'+esc(window.__user.pid)+'</b>)':'')+'. Ketuk satu untuk lihat kemajuan bandarnya. Data dikemas kini apabila pemain itu menyimpan.</p><p>'+sb('pop','👥 Penduduk')+sb('coin','💰 Kas')+sb('sat','😊 Puas')+sb('turn','⏱️ Hari')+'</p><label class="fld" style="margin:4px 0">Cari nombor / negara / presiden<input id="pq" autocomplete="off" placeholder="cth: 1005 atau Nusantara" value="'+esc(PQ)+'"></label><div id="pl" style="max-height:44vh;overflow:auto"></div><p><button class="b" data-a="players">🔄 Muat semula</button> <button class="b" data-a="close">Tutup</button></p>';plrows()}
+$('lbody').innerHTML='<h2>🌍 Pemain Lain</h2><p style="color:var(--mut)"><b>'+PL.length+'</b> bandar. Setiap pemain ada nombor tersendiri'+(window.__user&&window.__user.pid?' (nombor anda: <b>#'+esc(window.__user.pid)+'</b>)':'')+'. Ketuk satu untuk lihat kemajuan bandarnya. Data dikemas kini apabila pemain itu menyimpan.</p><label class="fld" style="margin:6px 0">Lawat bandar pemain (taip nombor ID)<input id="vn" inputmode="numeric" autocomplete="off" placeholder="cth: 1005"></label><button class="b pri" data-a="lawat">🏙️ Lawat bandar</button><p class="er" id="vm" style="min-height:1.2em"></p><p>'+sb('pop','👥 Penduduk')+sb('coin','💰 Kas')+sb('sat','😊 Puas')+sb('turn','⏱️ Hari')+'</p><label class="fld" style="margin:4px 0">Cari nombor / negara / presiden<input id="pq" autocomplete="off" placeholder="cth: 1005 atau Nusantara" value="'+esc(PQ)+'"></label><div id="pl" style="max-height:44vh;overflow:auto"></div><p><button class="b" data-a="players">🔄 Muat semula</button> <button class="b" data-a="close">Tutup</button></p>';plrows()}
 function plrows(){
 const q=PQ.trim().toLowerCase().replace(/^#/,''),k=PSORT;
 const R=PL.slice().sort((a,b)=>(b[k]-a[k])||(a.pid-b.pid)).map((p,i)=>[p,i+1]).filter(([p])=>!q||String(p.pid).indexOf(q)>=0||String(p.country).toLowerCase().indexOf(q)>=0||String(p.pres).toLowerCase().indexOf(q)>=0);
@@ -1372,11 +1375,38 @@ function pview(pid){
 const p=PL.find(x=>x.pid===pid);if(!p)return players();
 const bl=Object.keys(p.bld||{}).filter(k=>B[k]&&!PROAD[k]).sort((a,b)=>p.bld[b]-p.bld[a]),rd=pSum(p,k=>PROAD[k]);
 const row=(a,b)=>'<div class="ln"><span style="text-align:left">'+a+'</span><span>'+b+'</span></div>';
-$('lbody').innerHTML='<h2>🏳️ '+esc(p.country||'—')+'</h2><p class="mut">Pemain <b>#'+p.pid+'</b> · Presiden '+esc(p.pres||'—')+(p.me?' · <b>anda</b>':'')+'<br>Dikemas kini '+pAgo(p.ts)+'</p>'+
+$('lbody').innerHTML='<h2>🏳️ '+esc(p.country||'—')+'</h2><p style="color:var(--mut)">Pemain <b>#'+p.pid+'</b> · Presiden '+esc(p.pres||'—')+(p.me?' · <b>anda</b>':'')+'<br>Dikemas kini '+pAgo(p.ts)+'</p>'+
 row('⏱️ Tarikh game',esc(DS(p.turn)))+row('👥 Penduduk',p.pop)+row('💰 Kas',rm(p.coin))+row('📈 Pendapatan / hari',(p.inc>=0?'+':'-')+rm(Math.abs(p.inc)))+row('😊 Kepuasan rakyat',p.sat+'%')+row('💼 Pekerjaan',p.emp+'%')+row('🏗️ Bangunan',pSum(p,k=>!PROAD[k]))+row('🛣️ Jalan & landasan',rd)+
 '<h3>Bangunan</h3>'+(bl.length?'<div style="display:flex;flex-wrap:wrap;gap:6px">'+bl.map(k=>'<span style="background:rgba(255,255,255,.06);border-radius:8px;padding:4px 8px;font-size:.78rem">'+B[k][0]+' '+esc(B[k][1])+' × '+p.bld[k]+'</span>').join('')+'</div>':'<p class="mut">Belum ada bangunan.</p>')+
-'<p><button class="b" data-a="plist">◀ Senarai</button> <button class="b" data-a="close">Tutup</button></p>';$('lp').classList.add('show')}
+'<p><button class="b pri" data-a="lawatp" data-p="'+p.pid+'">🏙️ Lawat bandar ini</button> <button class="b" data-a="plist">◀ Senarai</button> <button class="b" data-a="close">Tutup</button></p>';$('lp').classList.add('show')}
 $('plb').onclick=()=>{if(!S.over)players()};
+/* ---------- Lawat bandar pemain lain (lihat sahaja, tidak menyentuh simpanan anda) ---------- */
+async function lawat(raw){
+const pid=String(raw||'').replace(/\D/g,''),msg=t=>{if($('vm'))$('vm').textContent=t;else say(t)};
+if(!pid)return msg('Taip nombor ID pemain dahulu.');
+msg('Membuka bandar #'+pid+'…');
+let d,sv=null,pf={};
+try{d=await api('/api/visit',{method:'POST',body:{pid}});try{sv=JSON.parse(d.save||'null')}catch(x){}try{pf=JSON.parse(d.prof||'{}')||{}}catch(x){}}
+catch(er){return msg(er.message)}
+if(!sv||typeof sv!=='object'||!Array.isArray(sv.g))return msg('Rekod bandar pemain ini tidak sah.');
+try{
+if(!VISIT){save();cloudNow()}
+if(VISIT&&VISIT.iv)clearInterval(VISIT.iv);
+sv.cv=2;sv.spd=180;delete sv.wall;
+SK='bb_visit_tmp';localStorage.setItem(SK,JSON.stringify(sv));
+PROF={pres:String(pf.pres||'').slice(0,24)||'—',country:String(pf.country||'').slice(0,30)||('Bandar #'+d.pid)};
+VISIT={pid:d.pid,coin:0,iv:0};document.body.classList.add('visit');
+document.title=PROF.country+' · Bina Bandar 3D';
+$('lp').classList.remove('show');
+init(false);
+VISIT.coin=S.coin;VISIT.iv=setInterval(()=>{if(S)S.coin=VISIT.coin},250);
+hud();vbar();say('👁️ Melawat '+PROF.country+' (#'+d.pid+'). Mod lihat sahaja: anda boleh pusing & zum, ketuk bangunan untuk lihat nama.')
+}catch(x){location.reload()}}
+function vbar(){let e=$('vbar');if(!e){e=document.createElement('div');e.id='vbar';document.body.appendChild(e)}
+e.innerHTML='👁️ Melawat <b>'+esc(PROF.country)+'</b> · #'+VISIT.pid+' · Presiden '+esc(PROF.pres)+' <small style="color:var(--mut)">(lihat sahaja)</small> <button class="b" data-v2="other">🌍 Lawat nombor lain</button> <button class="b pri" data-v2="exit">🏠 Pulang ke bandar saya</button>'}
+document.addEventListener('click',e=>{const b=e.target.closest('#vbar [data-v2]');if(!b)return;if(b.dataset.v2==='exit'){try{localStorage.removeItem('bb_visit_tmp')}catch(x){}location.reload()}else players()});
+$('lp').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='vn'){e.preventDefault();lawat(e.target.value)}});
+
 $('lp').addEventListener('input',e=>{if(e.target.id!=='pq')return;PQ=e.target.value;plrows()});
 
 $('tx').onclick=()=>{if(!S.over)eco()};
@@ -1525,6 +1555,8 @@ else if(a==='settax'){S.pt=clamp(+b.dataset.v,0,50);calc();hud();adv('tax','Cuka
 else if(a==='vdir'){const t=b.dataset.k,i=+b.dataset.i,d=+b.dataset.d,bb=B[t];$('lp').classList.remove('show');if(!VT[t]||!S.g[i]||!trk(i,VT[t].net)||!nbrs(i,VT[t].net).includes(d))return say(VT[t]?VT[t].msg:'Tidak sah.');if(S.vh.filter(x=>x.k===t).length>=15)return say('Maksimum 15 '+bb[1]+'.');if(S.coin<bb[2])return say('Kas kurang. '+bb[1]+' butuh '+rm(bb[2])+'.');S.coin-=bb[2];S.vh.push({k:t,i,d});calc();hud();say(bb[0]+' '+bb[1]+' mula beroperasi ke arah dipilih (-'+rm(bb[2])+').')}
 else if(a==='players')players()
 else if(a==='plist')plist()
+else if(a==='lawat')lawat($('vn')?$('vn').value:'')
+else if(a==='lawatp')lawat(b.dataset.p)
 else if(a==='pview')pview(+b.dataset.p)
 else if(a==='psort'){PSORT=b.dataset.k;plist()}
 else if(a==='chpw')pwForm()
@@ -1650,15 +1682,15 @@ if(take){if(d.save)localStorage.setItem(SK,d.save);else localStorage.removeItem(
 SYNC=d.ts||0}else{SYNC=0;if(lc)DIRTY=true}
 storeSync()}
 function statNow(){try{if(!S||!PROF.country)return null;const bld={};S.g.forEach(c=>{if(c)bld[c.t]=(bld[c.t]||0)+1});return{pres:PROF.pres,country:PROF.country,turn:S.turn,pop:S.pop,coin:Math.round(S.coin),sat:Math.round(S.sat),inc:Math.round(S.d?S.d.inc:0),emp:Math.round(emp()*100),bld}}catch(x){return null}}
-function cloudNow(){if(ADMIN_MODE||!TOK||!window.__user||!navigator.onLine||CBUSY||!DIRTY)return;const sv=localStorage.getItem(SK)||'',pf=localStorage.getItem(PK)||'';const a0=ACT;
+function cloudNow(){if(ADMIN_MODE||VISIT||!TOK||!window.__user||!navigator.onLine||CBUSY||!DIRTY)return;const sv=localStorage.getItem(SK)||'',pf=localStorage.getItem(PK)||'';const a0=ACT;
 CBUSY=true;api('/api/save',{method:'PUT',body:{save:sv,prof:pf,base:SYNC,stat:statNow()},ka:(sv.length+pf.length)<60000}).then(d=>{CBUSY=false;SYNC=d.ts||SYNC;storeSync();if(ACT===a0)DIRTY=false}).catch(er=>{CBUSY=false;if(er.status===401){TOK='';try{localStorage.removeItem('bb_token')}catch(x){}location.reload()}else if(er.status===409&&er.data)adopt(er.data)})}
 /* rekod di pelayan lebih baharu (disunting dari telefon lain): terima dan muat semula bangunan tanpa tukar kedudukan kamera */
 function adopt(d){if(!S||!window.__user||!d||!d.exists)return;try{if(d.save)localStorage.setItem(SK,d.save);else localStorage.removeItem(SK);if(d.prof)localStorage.setItem(PK,d.prof);else localStorage.removeItem(PK)}catch(x){}
 SYNC=d.ts||0;storeSync();DIRTY=false;const cm={x:C.x,z:C.z,yaw:C.yaw,dist:C.dist};try{loadProf()}catch(x){}init(false);C.x=cm.x;C.z=cm.z;C.yaw=cm.yaw;C.dist=cm.dist;say('🔄 Bandar dikemas kini daripada peranti lain (kedudukan bangunan disegerakkan).')}
-async function cloudPoll(){if(ADMIN_MODE||!TOK||!window.__user||!S||!navigator.onLine||document.hidden||CBUSY||CPOLL)return;CPOLL=true;
+async function cloudPoll(){if(ADMIN_MODE||VISIT||!TOK||!window.__user||!S||!navigator.onLine||document.hidden||CBUSY||CPOLL)return;CPOLL=true;
 try{const d=await api('/api/save');if(d.exists&&d.ts!==SYNC){if(DIRTY)cloudNow();else adopt(d)}}catch(er){if(er.status===401){TOK='';try{localStorage.removeItem('bb_token')}catch(x){}location.reload()}}CPOLL=false}
 setInterval(cloudPoll,15000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)cloudPoll()});addEventListener('focus',cloudPoll);
-function cloudPush(){if(!TOK||CPT)return;CPT=setTimeout(()=>{CPT=null;cloudNow()},15000)}
+function cloudPush(){if(VISIT||!TOK||CPT)return;CPT=setTimeout(()=>{CPT=null;cloudNow()},15000)}
 addEventListener('pagehide',cloudNow);document.addEventListener('visibilitychange',()=>{if(document.hidden)cloudNow()});
 let entered=false;
 function enter(id,pid){if(entered)return;entered=true;if(id===ADMIN_ID){ADMIN_MODE=true;return adminHome()}window.__user={id,pid:pid||''};box('<h2>🏙️ Bina Bandar 3D</h2><p>Memuatkan rekod anda…</p>');const k='_'+id;
