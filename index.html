@@ -781,7 +781,7 @@ for(const k in S.sp){const i=+k,c=S.g[i];if(!c||!STN[c.t]||!S.sp[k])continue;con
 while(arr.length<n){const r=mkHuman(),g=r.root;g.userData.hm=r;sc.add(g);arr.push(g)}
 while(arr.length>n)sc.remove(arr.pop());
 const tr=c.t==='stlrt'||c.t==='stmono',th=ROT[c.r||0],cs=Math.cos(th),sn=Math.sin(th);
-arr.forEach((g,q)=>{const d2=c.d2,lx=d2?-.33+(Math.floor(q/2)%4)*.22:-.33+(q%4)*.22,lz=d2?(tr?(q%2?.25:-.25):(q%2?.3:-.3)):(tr?(q<4?.02:.25):(q<4?.3:.18));g.position.set(tx(i)+lx*cs+lz*sn,tr?.44:0,tz(i)-lx*sn+lz*cs);g.rotation.y=q*1.7;{const r=g.userData.hm;if(r&&huNear(r,g.position))huAnim(r,t||0,.016,0)}})}}
+arr.forEach((g,q)=>{const d2=c.d2,lx=d2?-.33+(Math.floor(q/2)%4)*.22:-.33+(q%4)*.22,lz=d2?(tr?(q%2?.25:-.25):(q%2?.3:-.3)):(tr?(q<4?.02:.25):(q<4?.3:.18));g.position.set(tx(i)+lx*cs+lz*sn,(tr?.44:0)+.063,tz(i)-lx*sn+lz*cs);g.rotation.y=q*1.7;{const r=g.userData.hm;if(r&&huNear(r,g.position))huAnim(r,t||0,.016,0)}})}}
 
 function boardTrain(a){const st=SKIND[a.kind],nb=n4(a.from);let j=nb.find(q=>isT(q,st)&&stOn(q));if(j===undefined)j=nb.find(q=>isT(q,st));let b=0;S.sw=S.sw||{};
 if(j!==undefined){const w=Math.floor(S.sw[j]||0);b=Math.min(PAXCAP,w);if(b>0){S.sw[j]-=b;S.coin+=b*FARE;S.fare=(S.fare||0)+b*FARE}}a.pax=b;S.rides=(S.rides||0)+b;paxHeads(a,PAXCAP);return 2+b*.08}
@@ -923,8 +923,11 @@ const dx=tx(a.to)-tx(a.from),dz=tz(a.to)-tz(a.from),k=isRd(a)?.2:(a.kind==='lrt'
 if(!a.ok){a.off.x=gx;a.off.z=gz;a.h=ta;a.ok=true}
 else{const s=Math.min(1,dt*8);a.off.x+=(gx-a.off.x)*s;a.off.z+=(gz-a.off.z)*s;a.h+=(((ta-a.h+Math.PI*3)%(Math.PI*2))-Math.PI)*Math.min(1,dt*10)}
 let px=tx(a.from)+dx*a.f+a.off.x,pz=tz(a.from)+dz*a.f+a.off.z;if(isRd(a)){const r=carPath(a,dx,dz,ta);px=r[0];pz=r[1];a.h=r[2]}if(isRd(a)){const q=pushAll(a,px,pz);if(q.ch){px=q.x;pz=q.z;const fa=a.f;a.f=Math.min(fa+.05,1.2);const r2=carPath(a,dx,dz,ta);a.f=fa;const q2=pushAll(a,r2[0],r2[1]);if(Math.hypot(q2.x-px,q2.z-pz)>.004)a.h=Math.atan2(-(q2.z-pz),q2.x-px)}}
-a.g.position.set(px,isRd(a)?0:(a.kind==='lrt'||a.kind==='mono')?RH:(a.hr?0:Math.abs(Math.sin(t*8+a.ph))*.012)+zY(a),pz);
+a.g.position.set(px,isRd(a)?0:(a.kind==='lrt'||a.kind==='mono')?RH:(a.hr?pedY(a):Math.abs(Math.sin(t*8+a.ph))*.012)+zY(a),pz);
 a.g.rotation.y=a.h;if(a.hr&&a.kind==='ped')huStep(a,dt,t);if(isRd(a)){const wt=(qL(a.f<.5?a.from:a.to)===2)?.68:1;a.g.scale.z+=(wt-a.g.scale.z)*Math.min(1,dt*8)}}
+/* tinggi permukaan tempat pejalan kaki berpijak: laluan .063, tepi jalan bergabung laluan .078, zebra/jalan .066, landasan .062 */
+const pedH=j=>{const c=S.g[j];if(!c)return .063;if(c.t==='jalan')return c.z?.066:c.w?.078:.066;if(c.t==='laluan')return .063;return .062};
+function pedY(a){const u=clamp((a.f-.35)/.3,0,1),h0=pedH(a.from),h1=pedH(a.to);return h0+(h1-h0)*u+.001}
 const LN6=[-.4,-.24,-.08,.08,.24,.4],LW=[.37,.425,.47];
 function pedOff(a){const l=a.pl||0;if(Math.max(zl(a.from),zl(a.to))>=2)return LN6[l]*.4;if(wd(a.from)||wd(a.to))return(l<3?-1:1)*LW[l%3];return LN6[l]*(Math.max(zl(a.from),zl(a.to))>=2?.45:(isZ(a.from)||isZ(a.to))?.8:1)}
 const svc=ks=>S.g.reduce((a,c,i)=>a+(c&&ks.includes(c.t)&&(!NEED.has(c.t)||S.pw[i])?1:0),0);
