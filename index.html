@@ -143,12 +143,59 @@ html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;-webk
 #auth h2{margin:0 0 6px}#auth p{margin:6px 0;font-size:.84rem}
 #auth .b{margin:4px 4px 0 0}#auth .pri{border-color:var(--gold)}
 #auth .ok{color:var(--ok)}#auth .er{color:var(--bad)}
+/* ===== susun atur mesra telefon ===== */
+:root{--dock:rgba(8,22,32,.93)}
+.b,#cats button{touch-action:manipulation}
+#top{flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;gap:4px;pointer-events:auto;touch-action:pan-x;scrollbar-width:none;padding:calc(5px + env(safe-area-inset-top,0px)) max(6px,env(safe-area-inset-right,0px)) 0 max(8px,env(safe-area-inset-left,0px))}
+#top::-webkit-scrollbar{display:none}
+.chip{flex:none;display:flex;align-items:center;gap:5px;min-width:0;padding:4px 10px;border-radius:999px;font-size:.72rem;white-space:nowrap;color:var(--mut)}
+.chip>span:first-child{font-size:.9rem}
+.chip b{display:inline;font-size:.84rem}
+.chip small{font-size:.62rem;color:var(--mut)}
+.chip.bad{outline:1px solid var(--bad)}
+.chip #ct{display:none}
+.chip.id{max-width:150px}
+#side{top:calc(var(--toph,34px) + 6px);bottom:auto;right:max(6px,env(safe-area-inset-right,0px));gap:6px;overflow:visible}
+#side>.b{display:none}
+#side>#rl,#side>#rr,#side>#spd,#side>#end,#side>#mbtn{display:flex;flex-direction:column;align-items:center;justify-content:center;width:38px;height:38px;padding:0;font-size:1rem;line-height:1;border-radius:12px;white-space:nowrap}
+#side>.b small{display:block;font-size:.55rem;margin:1px 0 0;color:var(--mut)}
+#more{position:fixed;z-index:8;right:calc(max(6px,env(safe-area-inset-right,0px)) + 50px);top:calc(var(--toph,34px) + 6px);width:min(400px,calc(100vw - 120px));max-height:calc(100vh - var(--toph,34px) - var(--barh,50px) - 20px);max-height:calc(100dvh - var(--toph,34px) - var(--barh,50px) - 20px);overflow:auto;display:none;grid-template-columns:repeat(3,1fr);gap:6px;padding:8px;background:var(--dock);backdrop-filter:blur(8px);border-radius:14px;border:1px solid #2c5568}
+#more.show{display:grid}
+#more .b{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:2px;min-height:46px;padding:6px 4px;font-size:.72rem;white-space:normal;line-height:1.15}
+#more .b{background:rgba(255,255,255,.09)}
+#more .b small{display:none}
+#more #fest small{display:block;color:var(--gold)}
+@media (max-width:420px){#more{grid-template-columns:repeat(2,1fr)}}
+#bar{left:0;right:0;bottom:0;max-height:none;overflow:visible;flex-direction:column;gap:4px;padding:4px max(6px,env(safe-area-inset-right,0px)) calc(4px + env(safe-area-inset-bottom,0px)) max(6px,env(safe-area-inset-left,0px));background:var(--dock);border-radius:14px 14px 0 0}
+#bs{display:none}
+#crow{display:flex;gap:4px;align-items:stretch}
+#bto{flex:none;width:40px;height:40px;padding:0;display:flex;align-items:center;justify-content:center;font-size:1rem;border-radius:10px}
+#cats{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0;touch-action:pan-x}
+#cats::-webkit-scrollbar{display:none}
+#cats button{flex:none;display:flex;align-items:center;gap:4px;height:40px;padding:0 11px;border:2px solid transparent;border-radius:10px;background:rgba(255,255,255,.08);color:var(--tx);font:inherit;font-size:.74rem;white-space:nowrap;cursor:pointer}
+#cats button i{font-style:normal;font-size:1.1rem}
+#cats button.open{border-color:var(--ac);background:rgba(60,196,207,.2)}
+#cats button.has{border-color:var(--gold)}
+#bt{display:flex;gap:5px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;touch-action:pan-x}
+#bt:empty{display:none}
+#bt::-webkit-scrollbar{display:none}
+#bt .b{flex:none;width:78px;height:58px;min-width:0;padding:4px 3px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;text-align:center;line-height:1.1;touch-action:pan-x;background:rgba(255,255,255,.08)}
+#bt .b .nm{display:flex;flex-direction:column;align-items:center;max-width:100%;font-size:.64rem}
+#bt .b .nm i{font-style:normal;font-size:1.25rem;line-height:1.1}
+#bt .b .nm em{font-style:normal;max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#bt .b small{font-size:.6rem;color:var(--gold)}
+#bar.col #cats,#bar.col #bt{display:none}
+#bar.col #bto{width:auto;padding:0 12px}
+#toast{left:max(8px,env(safe-area-inset-left,0px));right:64px;margin:0;max-width:none;font-size:.78rem;padding:6px 10px}
+#toast.on{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+#lbody>h2+p.mut{display:none}
+#lbody p{font-size:.8rem}
 </style></head>
 <body>
 <canvas id="cv"></canvas>
 <div id="vpanel"></div><div id="top"></div><div id="toast"></div><div id="upbar"></div>
-<div id="side"><button class="b" id="rl" aria-label="Putar kiri">⟲</button><button class="b" id="rr" aria-label="Putar kanan">⟳</button><button class="b" id="spd"></button><button class="b" id="tx"></button><button class="b" id="vup">🚌 Kenderaan<small>naik taraf</small></button><button class="b" id="bud">🛍️ Bajet Rakyat<small>belian pintar</small></button><button class="b" id="sr">📮 Suara Rakyat<small>kotak aduan</small></button><button class="b" id="eco">🧾 Gaji &amp; Cukai<small>tetapan presiden</small></button><button class="b" id="pinfo">ℹ️ Info Swasta<small>untung &amp; pekerja</small></button><button class="b" id="menteri">📊 Menteri Perangkaan<small>kadar pengangguran</small></button><button class="b" id="keamanan">🚓 Menteri Keamanan<small>saman, bayaran &amp; balai</small></button><button class="b" id="jpj">🪪 JPJ<small>plat kenderaan</small></button><button class="b" id="adv"></button><button class="b" id="fest">🎉<small>RM5,000</small></button><button class="b" id="bank">🏦 Pinjaman<small>bank negara</small></button><button class="b" id="grd">⚡ Jaringan<small>liputan listrik</small></button><button class="b" id="fs">⛶ Skrin penuh<small>tekan F</small></button><button class="b" id="set">⚙️ Tetapan<small>reset game di sini</small></button><button class="b" id="end">⏭ Hari seterusnya</button></div>
-<div id="bar"><button class="b" id="bto">▾ Sembunyi menu bina</button><div id="bs"><select class="bsel" id="selR" aria-label="Jalan"></select><select class="bsel" id="selH" aria-label="Jenis Rumah"></select><select class="bsel" id="selA" aria-label="Aset Negara"></select><select class="bsel" id="selE" aria-label="Elektrik"></select><select class="bsel" id="selF" aria-label="Makanan dan Pertanian"></select><select class="bsel" id="selP" aria-label="Perniagaan"></select><select class="bsel" id="selD" aria-label="Hiasan"></select><select class="bsel" id="selB" aria-label="Bangunan"></select><select class="bsel" id="selV" aria-label="Kenderaan"></select><select class="bsel" id="selS" aria-label="Stesen"></select></div><div id="bt"></div></div>
+<div id="side"><button class="b" id="rl" aria-label="Putar kiri">⟲</button><button class="b" id="rr" aria-label="Putar kanan">⟳</button><button class="b" id="spd"></button><button class="b" id="tx"></button><button class="b" id="vup">🚌 Kenderaan<small>naik taraf</small></button><button class="b" id="bud">🛍️ Bajet<small>belian pintar</small></button><button class="b" id="sr">📮 Aduan<small>kotak aduan</small></button><button class="b" id="eco">🧾 Gaji<small>tetapan presiden</small></button><button class="b" id="pinfo">ℹ️ Swasta<small>untung &amp; pekerja</small></button><button class="b" id="menteri">📊 Statistik<small>kadar pengangguran</small></button><button class="b" id="keamanan">🚓 Keamanan<small>saman, bayaran &amp; balai</small></button><button class="b" id="jpj">🪪 JPJ<small>plat kenderaan</small></button><button class="b" id="adv"></button><button class="b" id="fest">🎉 Festival<small>RM5,000</small></button><button class="b" id="bank">🏦 Pinjaman<small>bank negara</small></button><button class="b" id="grd">⚡ Jaringan<small>liputan listrik</small></button><button class="b" id="fs">⛶ Skrin<small>tekan F</small></button><button class="b" id="set">⚙️ Tetapan<small>reset game di sini</small></button><button class="b" id="end">⏭<small>Hari</small></button><button class="b" id="mbtn" aria-label="Menu">☰<small>Menu</small></button></div><div id="more"></div>
+<div id="bar"><div id="crow"><button class="b" id="bto" aria-label="Menu bina">▾</button></div><div id="bs"><select class="bsel" id="selR" aria-label="Jalan"></select><select class="bsel" id="selH" aria-label="Jenis Rumah"></select><select class="bsel" id="selA" aria-label="Aset Negara"></select><select class="bsel" id="selE" aria-label="Elektrik"></select><select class="bsel" id="selF" aria-label="Makanan dan Pertanian"></select><select class="bsel" id="selP" aria-label="Perniagaan"></select><select class="bsel" id="selD" aria-label="Hiasan"></select><select class="bsel" id="selB" aria-label="Bangunan"></select><select class="bsel" id="selV" aria-label="Kenderaan"></select><select class="bsel" id="selS" aria-label="Stesen"></select></div><div id="bt"></div></div>
 <div id="auth"><div class="card"><p>Memuatkan…</p></div></div>
 <div id="intro" aria-label="Iwan New Town"><div class="stars"></div><div class="moon"></div><div class="ttl t1"></div><div class="ttl t2"></div><div class="sub">Bina Bandar 3D</div><div class="city"></div><div class="road"></div><div class="msg"></div><div class="pct">0%</div><div class="hint">SENTUH UNTUK LANGKAU</div><div class="bar"><i></i></div></div>
 <script>
@@ -1207,7 +1254,7 @@ function attr(){const d=S.d,P=[['😊 Kepuasan rakyat',S.sat*.4],['💼 Peluang 
 function polF(){let p=0;S.g.forEach((c,i)=>{const pf=c?(c.t==='pabrik'?10:FS[c.t]?FS[c.t][3]:c.t==='airport'?4:0):0;if(c&&pf&&(!NEED.has(c.t)||S.pw[i])){const x=i%N,z=Math.floor(i/N),far=!S.g.some((h,j)=>h&&isH(h.t)&&Math.hypot(x-j%N,z-Math.floor(j/N))<6);p+=c.l*10*(far?.6:1)}});return p}
 function calc(){S.pw=coverage();const rw=t=>S.g.map((c,i)=>c&&c.t===t&&nbrs(i,t).length?i:-1).filter(i=>i>=0);S.roads=rw('jalan');S.walks=S.g.map((c,i)=>c&&(c.t==='laluan'||c.w)&&nbrs(i,'laluan').length?i:-1).filter(i=>i>=0);const rt=t=>S.g.map((c,i)=>trk(i,t)&&nbrs(i,t).length?i:-1).filter(i=>i>=0);S.lrts=rt('lrt');S.monos=rt('mono');const d={};d.cap=HK.reduce((a,k)=>a+L(k)*HP[k],0);d.fp=L('tani')*10+FK.reduce((a,k)=>a+L(k)*FS[k][0],0);d.fc=Math.ceil(S.pop*.2);d.ep=PW()*20;d.ec=Math.ceil(S.pop*.1)+2*(L('pasar')+L('pabrik')+L('sekolah')+L('rs')+AL()+PN.reduce((a,k)=>a+L(k),0))+3*BL();
 d.pol=clamp(Math.round((Math.max(0,polF()-L('taman')*3-L('negara')*4-L('pokok')*1.5)+L('petrol')*0.02)*100)/100,0,100);S.e=econ();d.vinc=stIncome()+S.vh.reduce((a,v)=>a+(nbrs(v.i,VT[v.k].net).length?vInc(v.k):0),0);d.inc=S.e.gRev+S.e.btax+d.vinc-S.e.gpay-S.g.reduce((a,c)=>a+(c?(c.t==='laluan'?50:100)+(c.u?100:0)+(c.v?100:0)+(c.w?50:0):0),0);S.d=d;S.pol=d.pol;stScan();trOrient();updateGrid()}
-function say(s){const e=$('toast');e.textContent=s;e.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('on'),7000)}
+function say(s){const e=$('toast');e.textContent=s;e.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('on'),4000)}
 function click(i){if(S.over||!tool)return;const c=S.g[i];
 if(c&&c.t==='bengkel'&&(tool==='up'||tool==='bongkar'||tool==='pindah'))return say('🔧 Bengkel dibina dan diurus automatik apabila berlaku kemalangan. Tidak boleh dinaik taraf, dibongkar atau dipindah.');
 if(c&&c.t==='balaipolis'&&(tool==='up'||tool==='bongkar'||tool==='pindah'))return say('🚓 Balai Polis Trafik dibina dan diurus automatik oleh Menteri Keamanan. Tidak boleh dinaik taraf, dibongkar atau dipindah.');
@@ -1257,14 +1304,24 @@ if(w){$('again').textContent='Teruskan bermain';$('ot').textContent=w[0];$('om')
 hud();say('📅 '+DS(S.turn)+': '+m.join(' | '))}
 const dueL=l=>l.due-S.turn+1;
 function hud(){vpRef();const d=S.d,n=x=>(x>=0?'+':'')+x,tot=S.loans.reduce((a,l)=>a+l.owed,0),minDue=S.loans.length?Math.min(...S.loans.map(l=>l.due)):0;
-$('top').innerHTML='<div class="chip id"><span>🏳️ Negara</span><b>'+esc(PROF.country||'—')+'</b>'+esc(title())+'</div><div class="chip"><span>⏱️ Masa</span><b id="cd"></b><span id="ct"></span></div>'+[['💼 Kerja',Math.round(emp()*100)+'%',jobs()+' jawatan',S.pop>15&&emp()<.6],['💰 Kas',rm(S.coin),n(d.inc)+' RM/hari'],['🧾 Gaji purata',S.e&&S.e.fl>0?rm(Math.round(S.e.aw)):'—','kerajaan '+rm(S.gw)+' · swasta '+(S.e&&S.e.pemp>0?rm(Math.round(S.e.pwage/S.e.pemp)):'—'),!!(S.e&&S.e.fl>0&&S.e.aw<35)],['👥 Penduduk',S.pop+'/'+d.cap,'target 500'],['🌾 Pangan',S.food,n(d.fp-d.fc)+'/hari'],['⚡ Energi',d.ep+'/'+d.ec,(d.ep>=d.ec?'cukup':'KURANG')+(S.dark?' · '+S.dark+' tanpa listrik':''),d.ep<d.ec||S.dark>0],['😊 Puas',S.sat+'%','target 80%'],['🏭 Polusi',S.pol.toFixed(2)+'%','maks 50%'],['🏦 Hutang',rm(tot),S.loans.length?'lunas '+DS(minDue)+' (sisa '+(minDue-S.turn+1)+' hari)':'tiada',S.loans.length>0&&minDue-S.turn+1<=NOTD]].map(x=>'<div class="chip'+(x[3]?' bad':'')+'">'+x[0]+'<b>'+x[1]+'</b>'+x[2]+'</div>').join('');
+{const ck=(ic,v,sub,bad,tt)=>'<div class="chip'+(bad?' bad':'')+'" title="'+tt+'"><span>'+ic+'</span><b>'+v+'</b>'+(sub?'<small>'+sub+'</small>':'')+'</div>',lw=!!(S.e&&S.e.fl>0&&S.e.aw<35),dd=minDue-S.turn+1;
+$('top').innerHTML='<div class="chip id"><span>🏳️</span><b>'+esc(PROF.country||'—')+'</b></div><div class="chip"><span>⏱️</span><b id="cd"></b><span id="ct"></span></div>'+ck('💰',rm(S.coin),n(d.inc)+'/hari',0,'Kas')+ck('👥',S.pop+'/'+d.cap,'',0,'Penduduk (target 500)')+ck('💼',Math.round(emp()*100)+'%','',S.pop>15&&emp()<.6,'Kerja')+ck('🌾',S.food,n(d.fp-d.fc)+'/hari',0,'Pangan')+ck('⚡',d.ep+'/'+d.ec,d.ep>=d.ec?'':'KURANG',d.ep<d.ec||S.dark>0,'Tenaga')+ck('😊',S.sat+'%','',0,'Puas (target 80%)')+(S.pol>=30?ck('🏭',S.pol.toFixed(0)+'%','',S.pol>=45,'Polusi (maks 50%)'):'')+(S.loans.length?ck('🏦',rm(tot),'sisa '+dd+' hari',dd<=NOTD,'Hutang'):'')+(lw?ck('🧾',rm(Math.round(S.e.aw)),'rendah',1,'Gaji purata'):'')}
 const gv=showGrid||isPow(tool);[covI,poleI,barI].forEach(o=>o.visible=gv);if(!isPow(tool)){pvI.count=0}$('grd').className='b'+(showGrid?' on':'');
-const sl=$('bar').scrollTop;$('bt').innerHTML=Object.keys(B).filter(k=>!GN.has(k)).map(k=>'<button class="b'+(tool===k?' on':'')+'" data-t="'+k+'">'+B[k][0]+' '+B[k][1]+'<small>'+rm(B[k][2])+'</small></button>').join('')+'<button class="b'+(tool==='up'?' on':'')+'" data-t="up">⬆️ Upgrade<small>pilih banyak · serentak</small></button><button class="b'+(tool==='bongkar'?' on':'')+'" data-t="bongkar">🧹 Bongkar<small>10% harga asal</small></button><button class="b'+(tool==='putar'?' on':'')+'" data-t="putar">🔄 Putar hadapan<small>percuma</small></button><button class="b'+(tool==='pindah'?' on':'')+'" data-t="pindah">🚚 Pindah<small>20% · jalan percuma</small></button>';$('bar').scrollTop=sl;syncSel();
-$('tx').innerHTML='💸 Cukai rakyat<small>'+S.pt+'% · rumah '+S.ht.toFixed(1)+'% /thn</small>';$('adv').innerHTML='🗣️ Suara Rakyat<small>'+sugg().filter(s=>s.p>=80).length+' perkara mendesak</small>';try{const st=stats();$('menteri').innerHTML='📊 Menteri Perangkaan<small>'+(st.pop>0?'pengangguran '+st.ur.toFixed(1)+'%':'tiada penduduk')+'</small>'}catch(x){}try{$('keamanan').innerHTML='🚓 Menteri Keamanan<small>'+(S.sm?S.sm.n:0)+' saman · '+stnList().length+' balai</small>'}catch(x){}try{$('jpj').innerHTML='🪪 JPJ<small>'+((S.jpj&&S.jpj.n)||0)+' plat</small>'}catch(x){}spdUI();clockUI();upUI();save()}
+const sl=$('bar').scrollTop;drawBt();$('bar').scrollTop=sl;syncSel();
+$('tx').innerHTML='💸 Cukai<small>'+S.pt+'%</small>';$('adv').innerHTML='🗣️ Suara'+(sugg().filter(s=>s.p>=80).length?' ('+sugg().filter(s=>s.p>=80).length+')':'');try{const st=stats();$('menteri').innerHTML='📊 Statistik<small>'+(st.pop>0?st.ur.toFixed(1)+'%':'')+'</small>'}catch(x){}try{$('keamanan').innerHTML='🚓 Keamanan<small>'+(S.sm?S.sm.n:0)+'</small>'}catch(x){}try{$('jpj').innerHTML='🪪 JPJ<small>'+((S.jpj&&S.jpj.n)||0)+'</small>'}catch(x){}spdUI();clockUI();upUI();save()}
+/* ---------- dok bina (telefon) ---------- */
+var catOpen=null;
+const CATS=[['asas','🏗️','Asas'],['road','🛣️','Jalan'],['rumah','🏠','Rumah'],['aset','🏛️','Aset'],['elek','⚡','Elektrik'],['food','🌾','Makanan'],['biz','💼','Niaga'],['hias','🌸','Hias'],['bgn','🏙️','Bangunan'],['veh','🚐','Kenderaan'],['stn','🚉','Stesen'],['alat','🛠️','Alat']],
+TOOLS=[['up','⬆️','Upgrade',''],['bongkar','🧹','Bongkar','10%'],['putar','🔄','Putar','percuma'],['pindah','🚚','Pindah','20%']],
+catKeys=c=>c==='asas'?Object.keys(B).filter(k=>!GN.has(k)):(G[c]||[]),shortN=t=>String(t).replace(/\s*\(.*?\)/g,'').replace(/\s*—.*$/,'').trim();
+function drawCats(){const e=$('cats');if(!e)return;const h=CATS.map(c=>{const has=c[0]==='alat'?TOOLS.some(t=>t[0]===tool):catKeys(c[0]).includes(tool);return '<button data-c="'+c[0]+'" class="'+(catOpen===c[0]?'open':has?'has':'')+'"><i>'+c[1]+'</i>'+c[2]+'</button>'}).join('');if(e._h===h)return;const sx=e.scrollLeft;e.innerHTML=h;e._h=h;e.scrollLeft=sx}
+function drawBt(){const e=$('bt');let h='';if(catOpen==='alat')h=TOOLS.map(t=>'<button class="b'+(tool===t[0]?' on':'')+'" data-t="'+t[0]+'"><span class="nm"><i>'+t[1]+'</i> <em>'+t[2]+'</em></span>'+(t[3]?'<small>'+t[3]+'</small>':'')+'</button>').join('');
+else if(catOpen)h=catKeys(catOpen).filter(k=>B[k]).map(k=>'<button class="b'+(tool===k?' on':'')+'" data-t="'+k+'" title="'+esc(B[k][1])+'"><span class="nm"><i>'+B[k][0]+'</i> <em>'+esc(shortN(B[k][1]))+'</em></span><small>'+rm(B[k][2])+'</small></button>').join('');
+if(e._h!==h){const sx=e.scrollLeft;e.innerHTML=h;e._h=h;e.scrollLeft=sx}drawCats()}
 /* ---------- dropdown aset negara & elektrik ---------- */
 function buildSel(){const o=(ph,ks)=>'<option value="">'+ph+'</option>'+ks.map(k=>'<option value="'+k+'">'+B[k][0]+' '+B[k][1]+' — '+rm(B[k][2])+' · '+EXTRA[k]+'</option>').join('');$('selR').innerHTML=o('🛣️ Jalan ▾',G.road);$('selA').innerHTML=o('🏛️ Aset Negara ▾',G.aset);$('selE').innerHTML=o('⚡ Elektrik ▾',G.elek);$('selH').innerHTML=o('🏠 Jenis Rumah ▾',G.rumah);$('selF').innerHTML=o('🌾 Makanan & Pertanian ▾',G.food);$('selP').innerHTML=o('💼 Perniagaan ▾',G.biz);$('selD').innerHTML=o('🌸 Hiasan ▾',G.hias);$('selB').innerHTML=o('🏙️ Bangunan ▾',G.bgn);$('selV').innerHTML=o('🚐 Kenderaan ▾',G.veh);$('selS').innerHTML=o('🚉 Stesen ▾',G.stn)}
-function syncSel(){[['selR',G.road],['selH',G.rumah],['selA',G.aset],['selE',G.elek],['selF',G.food],['selP',G.biz],['selD',G.hias],['selB',G.bgn],['selV',G.veh],['selS',G.stn]].forEach(([id,ks])=>{const e=$(id),on=ks.includes(tool);e.value=on?tool:'';e.classList.toggle('on',on)})}
-$('selR').onchange=$('selS').onchange=$('selV').onchange=$('selH').onchange=$('selA').onchange=$('selE').onchange=$('selF').onchange=$('selP').onchange=$('selD').onchange=$('selB').onchange=e=>{const v=e.target.value;e.target.blur();if(S.over)return syncSel();setTool(v||null);if(!v)clearHover();hud();if(v)say(B[v][1]+' dipilih. KLIK petak di peta untuk membina. Tekan Esc untuk batal.')};
+function syncSel(){[['selR',G.road],['selH',G.rumah],['selA',G.aset],['selE',G.elek],['selF',G.food],['selP',G.biz],['selD',G.hias],['selB',G.bgn],['selV',G.veh],['selS',G.stn]].forEach(([id,ks])=>{const e=$(id),on=ks.includes(tool);e.value=on?tool:'';e.classList.toggle('on',on)});drawCats()}
+$('selR').onchange=$('selS').onchange=$('selV').onchange=$('selH').onchange=$('selA').onchange=$('selE').onchange=$('selF').onchange=$('selP').onchange=$('selD').onchange=$('selB').onchange=e=>{const v=e.target.value;e.target.blur();if(S.over)return syncSel();setTool(v||null);if(!v)clearHover();hud();if(v)say(B[v][1]+' dipilih — ketuk petak')};
 /* ---------- seret item ke petak ---------- */
 function setTool(t){if(t!=='up'&&UPS.size){UPS.clear();upSync()}tool=t;mv=null;selUI();$('bar').querySelectorAll('[data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===t));syncSel();const gv=showGrid||isPow(tool);[covI,poleI,barI].forEach(o=>o.visible=gv);if(!isPow(tool))pvI.count=0;upUI()}
 var UPS=new Set(),upM=new Map();
@@ -1290,7 +1347,7 @@ const p=fp(e),g=$('ghost');g.style.left=p.clientX+'px';g.style.top=p.clientY+'px
 if(document.elementFromPoint(p.clientX,p.clientY)===cv)hover(p);else clearHover()});
 addEventListener('pointerup',e=>{if(!dg||e.pointerId!==dg.id)return;const d=dg;dg=null;$('ghost').style.display='none';
 if(d.on){const p=fp(e);if(document.elementFromPoint(p.clientX,p.clientY)===cv){const i=pick(p);if(i>=0)click(i)}clearHover()}
-else{const off=tool===d.t;setTool(off?null:d.t);if(off)clearHover();hud();say(off?'Mod biasa: tiada item dipilih.':d.label+' dipilih. KLIK petak di peta untuk membina. Klik item ini lagi atau tekan Esc untuk batal.')}});
+else{const off=tool===d.t;setTool(off?null:d.t);if(off)clearHover();hud();say(off?'Batal':d.label+' dipilih — ketuk petak')}});
 addEventListener('pointercancel',e=>{if(dg&&e.pointerId===dg.id){dg=null;$('ghost').style.display='none';clearHover()}});
 function settings(ask){$('lbody').innerHTML='<h2>⚙️ Tetapan</h2>'+(ask?'<p>Pasti mahu reset? Semua kemajuan (Hari '+S.turn+', '+S.pop+' penduduk, kas '+rm(S.coin)+') akan dipadam dan game bermula dari awal. Tindakan ini tidak boleh dibatalkan.</p><button class="b" data-a="newgo" style="border-color:var(--bad)">Ya, reset sekarang</button> <button class="b" data-a="settings">Batal</button>':'<p class="mut">Game tidak akan reset sendiri, walaupun anda mencapai kecemerlangan atau kehabisan kas. Satu-satunya pengecualian: hutang bank yang tidak dilunaskan sebelum tarikh akhir menamatkan game. Reset hanya berlaku apabila butang di bawah ditekan.</p><button class="b" data-a="editprof">✏️ Tukar nama / negara<small>'+esc(title())+' · '+esc(PROF.country)+'</small></button> <button class="b" data-a="chpw">🔑 Tukar kata laluan<small>ID kekal sama</small></button> <button class="b" data-a="logout">🚪 Log keluar<small>'+esc((window.__user?window.__user.id:'')||'')+'</small></button> <button class="b" data-a="resetask" style="border-color:var(--bad)">🔄 Reset Game<small>padam simpanan, mula dari awal</small></button> <button class="b" data-a="close">Tutup</button>');$('lp').classList.add('show')}
 $('set').onclick=()=>settings();
@@ -1303,7 +1360,15 @@ function startGame(){const f=x=>$(x).value.replace(/\s+/g,' ').trim(),p=f('pn'),
 const nw=profMode==='new';if(nw){S.spd=1;S.t=0;S.nd=3;lastW=Date.now()}PROF={pres:p,country:c};saveProf();profMode=null;$('lp').classList.remove('show');hud();if(nw)welcome();else say('Nama dikemas kini: '+title()+' dari '+PROF.country+'.')}
 $('lp').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.tagName==='INPUT'){e.preventDefault();if(e.target.id==='pn'&&!$('cn').value.trim())$('cn').focus();else if(e.target.id==='la')$('ptake').click();else if($('pgo'))$('pgo').click();else if($('pwgo'))$('pwgo').click()}});
 /* ---------- menu bina: sembunyi/tunjuk ---------- */
-$('bto').onclick=()=>{const c=$('bar').classList.toggle('col');$('bto').textContent=c?'▴ Tunjuk menu bina':'▾ Sembunyi menu bina'};
+$('bto').onclick=()=>{const c=$('bar').classList.toggle('col');$('bto').textContent=c?'🏗️ ▴':'▾'};
+(function(){const cats=document.createElement('div');cats.id='cats';$('crow').appendChild(cats);
+cats.addEventListener('click',e=>{const b=e.target.closest('[data-c]');if(!b)return;catOpen=catOpen===b.dataset.c?null:b.dataset.c;drawBt()});
+const more=$('more'),mb=$('mbtn');['tx','vup','bud','sr','eco','pinfo','menteri','keamanan','jpj','adv','fest','bank','grd','fs','set'].forEach(id=>{const b=$(id);if(b)more.appendChild(b)});
+mb.onclick=e=>{e.stopPropagation();more.classList.toggle('show')};
+more.addEventListener('click',e=>{if(e.target.closest('button'))setTimeout(()=>more.classList.remove('show'),0)});
+document.addEventListener('pointerdown',e=>{if(more.classList.contains('show')&&!e.target.closest('#more,#mbtn'))more.classList.remove('show')});
+drawBt()})();
+
 const rz=()=>{const r=document.documentElement.style;r.setProperty('--barh',$('bar').offsetHeight+'px');r.setProperty('--toph',$('top').offsetHeight+'px')};
 if(window.ResizeObserver){const ro=new ResizeObserver(rz);ro.observe($('bar'));ro.observe($('top'))}addEventListener('resize',rz);
 /* ---------- panel gaji & cukai ---------- */
@@ -1426,7 +1491,7 @@ $('lp').onclick=e=>{if(e.target.id==='lp'){if(profMode==='new')return;$('lp').cl
 if(a==='close')$('lp').classList.remove('show');
 else if(a==='take'){if(!(LA>=10000))return bank('Jumlah minimum pinjaman ialah RM10,000.');const ow=LA+Math.round(LA*LT*12/100);if(S.loans.reduce((s,l)=>s+l.owed,0)+ow>MAXD)return bank('Melebihi had hutang '+rm(MAXD)+'.');S.coin+=LA;S.loans.push({amt:LA,owed:ow,due:S.turn+LT*YD,nt:0});calc();hud();bank('Pinjaman '+rm(LA)+' diluluskan. Lunaskan sebelum '+DS(S.turn+LT*YD)+'.')}
 else if(a==='ask')adv(b.dataset.q)
-else if(a==='sgtool'){setTool(b.dataset.tool);$('lp').classList.remove('show');hud();say(B[tool][1]+' dipilih. KLIK petak di peta untuk membina.')}
+else if(a==='sgtool'){setTool(b.dataset.tool);$('lp').classList.remove('show');hud();say(B[tool][1]+' dipilih — ketuk petak')}
 else if(a==='ecoopen'){eco()}else if(a==='eco'){const k=b.dataset.k;if(!WSTEP[k])return;S[k]=Math.round(clamp(S[k]+(+b.dataset.v)*WSTEP[k],0,WMAX[k])*100)/100;calc();hud();eco()}
 else if(a==='settax'){S.pt=clamp(+b.dataset.v,0,50);calc();hud();adv('tax','Cukai pendapatan ditukar ke '+S.pt+'% setahun.')}
 else if(a==='vdir'){const t=b.dataset.k,i=+b.dataset.i,d=+b.dataset.d,bb=B[t];$('lp').classList.remove('show');if(!VT[t]||!S.g[i]||!trk(i,VT[t].net)||!nbrs(i,VT[t].net).includes(d))return say(VT[t]?VT[t].msg:'Tidak sah.');if(S.vh.filter(x=>x.k===t).length>=15)return say('Maksimum 15 '+bb[1]+'.');if(S.coin<bb[2])return say('Kas kurang. '+bb[1]+' butuh '+rm(bb[2])+'.');S.coin-=bb[2];S.vh.push({k:t,i,d});calc();hud();say(bb[0]+' '+bb[1]+' mula beroperasi ke arah dipilih (-'+rm(bb[2])+').')}
@@ -1457,7 +1522,7 @@ setInterval(advance,1000);
 function catchUp(){if(!S.wall||S.spd<=0||S.over)return 0;const g=Math.max(0,(Date.now()-S.wall)/1000);S.wall=0;if(g<5)return 0;const t0=S.turn;S.t+=Math.min(g,3000*3*HR/S.spd)*S.spd/HR;while(S.t>=S.nd&&!S.over){S.nd+=3;end()}lastW=Date.now();return S.turn-t0}
 const DS=n=>((n-1)%20+1)+' hari, '+(Math.floor((n-1)/20)%12+1)+' bulan, '+(Math.floor((n-1)/240)+1)+' tahun';
 function clockUI(){const a=$('cd');if(!a)return;const ts=Math.floor((S.t%3)*3600),hh=Math.floor(ts/3600),mm=Math.floor(ts%3600/60),ss=ts%60;a.textContent=DS(S.turn);dnCalc();$('ct').textContent='🕒 '+pad(hh)+':'+pad(mm)+':'+pad(ss)+' · '+dnName()+' · 💾 auto-simpan'}
-function spdUI(){$('spd').innerHTML=S.spd?'⏱️ Masa<small>'+S.spd+'x'+(S.spd===1?' (jam biasa)':'')+' · klik tukar</small>':'⏸ Jeda<small>klik sambung</small>'}
+function spdUI(){$('spd').innerHTML=S.spd?'⏱️<small>'+S.spd+'x</small>':'⏸<small>Jeda</small>'}
 $('spd').onclick=()=>{S.spd=SP[(SP.indexOf(S.spd)+1)%SP.length];spdUI()};
 /* ---------- suara rakyat ---------- */
 function sugg(){const d=S.d,a=[],g=(p,i,t,tool,q)=>a.push({p,i,t,tool,q}),nh=S.g.filter(c=>c&&isH(c.t)).length,need=S.g.some(c=>c&&NEED.has(c.t)),e=emp(),ms=S.loans.length?Math.min(...S.loans.map(l=>l.due))-S.turn+1:99,sh=S.pop>0&&(d.ep<d.ec||S.food+d.fp-d.fc<0);
