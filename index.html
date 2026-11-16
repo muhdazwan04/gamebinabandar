@@ -591,6 +591,38 @@ function vLamps(p,xf,xb,y,z,bl,sz){sz=sz||.018;[-1,1].forEach(s=>{mM(bx,hlM,xf,y
 const PLN=new THREE.PlaneGeometry(1,1),RKL={};
 /* logo "rapidKL" (teks canvas) untuk sisi tren LRT */
 function rklMat(t){if(RKL[t])return RKL[t];const c=document.createElement('canvas');c.width=t==='rapid'?320:180;c.height=96;const x=c.getContext('2d');x.font='italic 800 78px Arial, Helvetica, sans-serif';x.textBaseline='middle';x.textAlign=t==='rapid'?'right':'left';x.fillStyle=t==='rapid'?'#2b63b6':'#163a84';x.fillText(t==='rapid'?'rapid':'KL',t==='rapid'?c.width-4:4,c.height/2+4);const tx=new THREE.CanvasTexture(c);tx.anisotropy=4;return RKL[t]=new THREE.MeshLambertMaterial({map:tx,transparent:true,alphaTest:.05})}
+/* badan tren LRT berbentuk "loft": keratan rentas bulat disusun sepanjang x; hidung tirus & cermin depan condong */
+const LFC={};const lfc=h=>LFC[h]||(LFC[h]=new THREE.Color(h));
+const LRU=[0,.7,.96,1,1,1,1,1,.985,.93,.8,.4,0],LRV=[0,0,.03,.123,.486,.534,.788,.932,.962,.985,1,1,1],LRB=['sk','sk','sk','lw','rb','wn','ru','rf','rf','rf','rf','rf'];
+const LBC={sk:'#2b2f34',lw:'#f4f5f7',rb:'#d9232d',wn:'#14181d',ru:'#d9232d',rf:'#f4f5f7'};
+function loftGeo(st,gf){
+  /* st: [{x,w,b,t}] dari belakang ke depan; gf(xm,band,i) -> warna hex bagi segmen */
+  const ring=[];for(let i=0;i<13;i++)ring.push([LRU[i],LRV[i],1]);for(let i=11;i>=1;i--)ring.push([LRU[i],LRV[i],-1]);
+  const R=ring.length,S=st.length,P=[],Nn=[];
+  for(let i=0;i<S;i++){const s=st[i];P.push(ring.map(r=>[s.x,s.b+r[1]*(s.t-s.b),r[2]*r[0]*s.w]))}
+  for(let i=0;i<S;i++){Nn.push(ring.map(()=>[0,0,0]))}
+  const sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]],crs=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+  for(let i=0;i<S-1;i++)for(let j=0;j<R;j++){const j2=(j+1)%R,a=P[i][j],b=P[i+1][j],d=P[i][j2],n=crs(sub(b,a),sub(d,a));[[i,j],[i+1,j],[i+1,j2],[i,j2]].forEach(([ii,jj])=>{const q=Nn[ii][jj];q[0]+=n[0];q[1]+=n[1];q[2]+=n[2]})}
+  Nn.forEach(r=>r.forEach(q=>{const l=Math.hypot(q[0],q[1],q[2])||1;q[0]/=l;q[1]/=l;q[2]/=l}));
+  const pos=[],nor=[],col=[];
+  const push=(p,n,c)=>{pos.push(p[0],p[1],p[2]);nor.push(n[0],n[1],n[2]);col.push(c.r,c.g,c.b)};
+  for(let i=0;i<S-1;i++){const xm=(st[i].x+st[i+1].x)/2;for(let j=0;j<R;j++){const j2=(j+1)%R,bd=LRB[j<12?j:23-j],c=lfc(gf(xm,bd,i));
+    const a=[i,j],b=[i+1,j],cc=[i+1,j2],d=[i,j2];[[a,b,cc],[a,cc,d]].forEach(t=>t.forEach(([ii,jj])=>push(P[ii][jj],Nn[ii][jj],c)))}}
+  [[0,-1],[S-1,1]].forEach(([i,dir])=>{const cx=P[i].reduce((s,p)=>[s[0]+p[0]/R,s[1]+p[1]/R,s[2]+p[2]/R],[0,0,0]),c=lfc(gf(st[i].x+dir*.001,'cap',i));
+    for(let j=0;j<R;j++){const j2=(j+1)%R;let A=P[i][j],B=P[i][j2];const n=crs(sub(A,cx),sub(B,cx));if(n[0]*dir<0){const t=A;A=B;B=t}[cx,A,B].forEach(p=>push(p,[dir,0,0],c))}});
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));return g}
+const LRM=new THREE.MeshLambertMaterial({vertexColors:true});
+const LST=[{x:-.075,w:.08,b:.012,t:.158},{x:.075,w:.08,b:.012,t:.158}];
+const LNOSE=[{x:.035,w:.08,b:.012,t:.158},{x:.055,w:.0795,b:.0125,t:.155},{x:.07,w:.0775,b:.0135,t:.148},{x:.083,w:.0735,b:.016,t:.137},{x:.093,w:.066,b:.02,t:.122},{x:.0995,w:.057,b:.025,t:.108},{x:.1025,w:.048,b:.03,t:.098}];
+const LTAIL=[{x:-.1,w:.06,b:.018,t:.136},{x:-.096,w:.066,b:.016,t:.142},{x:-.09,w:.0715,b:.0145,t:.1485},{x:-.082,w:.0772,b:.0132,t:.154}];
+const LRG={};
+function lrtBody(hc,tc){const key=(hc?1:0)+(tc?2:0);return LRG[key]||(LRG[key]=lrtBody0(hc,tc))}
+function lrtBody0(hc,tc){let st=LST;if(hc)st=[LST[0],{x:.035,w:.08,b:.012,t:.158}].concat(LNOSE.slice(1));else if(tc)st=LTAIL.concat([LST[1]]);
+  return loftGeo(st,(xm,bd)=>{if(bd==='cap')return'#101317';
+    if(hc&&xm>.04){if(bd==='rf'&&xm>.06)return'#1f2a36';if(xm>.09&&bd!=='sk'&&bd!=='rf')return'#d9232d'}
+    if(tc&&xm<-.08){if(bd==='rf')return'#1f2a36';if(xm<-.088&&bd!=='sk')return'#d9232d'}
+    return LBC[bd]})}
+
 function mkAgent(kind){const g=new THREE.Group();let parts=null;const hd=[];const mk=x=>{const p=new THREE.Group();g.add(p);parts.push({g:p,x});return p};
 if(kind==='car'){m(bx,CARC[rnd(CARC.length)],0,.1,0,.26,.08,.14,g);m(bx,'#cfe8f5',-.02,.17,0,.13,.06,.12,g);vLamps(g,.132,-.132,.1,.045,.34,.02)}
 else if(kind==='van'){const c=CARC[rnd(CARC.length)];m(bx,'#f4f4f4',-.03,.115,0,.2,.14,.15,g);m(bx,c,-.03,.19,0,.2,.012,.152,g);m(bx,c,.1,.095,0,.09,.1,.15,g);m(bx,'#cfe8f5',.146,.125,0,.01,.05,.12,g);[-.08,.1].forEach(x=>[-.07,.07].forEach(z=>m(bx,'#222',x,.035,z,.05,.05,.02,g)));vLamps(g,.148,-.132,.085,.055,.34,.02)}
@@ -598,17 +630,17 @@ else if(kind==='bus'){const c=['#e53935','#fb8c00','#1e88e5','#43a047'][rnd(4)];
 else if(kind==='amb'){m(bx,'#ffffff',-.03,.115,0,.2,.14,.15,g);m(bx,'#e53935',-.03,.1,0,.202,.03,.152,g);m(bx,'#ffffff',.1,.095,0,.09,.1,.15,g);m(bx,'#cfe8f5',.146,.125,0,.01,.05,.12,g);[-.08,.1].forEach(x=>[-.07,.07].forEach(z=>m(bx,'#222',x,.035,z,.05,.05,.02,g)));[-1,1].forEach(s=>{m(bx,'#e53935',-.03,.14,s*.0765,.07,.02,.004,g);m(bx,'#e53935',-.03,.14,s*.0765,.02,.07,.004,g)});m(bx,'#e53935',-.07,.195,0,.04,.02,.05,g);m(bx,'#1e88e5',.0,.195,0,.04,.02,.05,g);vLamps(g,.148,-.132,.085,.055,.36,.02)}
 else if(kind==='tow'){m(bx,'#37474f',-.06,.065,0,.25,.03,.15,g);m(bx,'#ffb300',.105,.105,0,.09,.1,.15,g);m(bx,'#cfe8f5',.15,.125,0,.01,.05,.12,g);[-.08,.1].forEach(x=>[-.07,.07].forEach(z=>m(bx,'#222',x,.035,z,.05,.05,.02,g)));m(bx,'#ff6f00',.105,.17,0,.03,.02,.05,g);m(bx,'#90a4ae',-.17,.09,0,.02,.07,.1,g);vLamps(g,.152,-.132,.085,.055,.34,.02)}
 else if(kind==='sbus'){m(bx,'#fbc02d',0,.11,0,.34,.15,.16,g);m(bx,'#212121',0,.075,0,.342,.015,.162,g);m(bx,'#212121',0,.105,0,.342,.01,.162,g);m(bx,'#cfe8f5',-.01,.14,0,.28,.05,.165,g);m(bx,'#cfe8f5',.172,.13,0,.01,.07,.13,g);m(bx,'#fbc02d',0,.19,0,.3,.012,.12,g);m(bx,'#e53935',.172,.17,0,.012,.03,.1,g);[-.11,.11].forEach(x=>[-.075,.075].forEach(z=>m(bx,'#222',x,.035,z,.05,.05,.02,g)));vLamps(g,.174,-.172,.075,.06,.42,.022)}
-else if(kind==='lrt'){parts=[];[-.31,0,.31].forEach(q=>[-1,1].forEach(s=>{const p=mk(q+s*.0725),hc=q>0&&s>0,tc=q<0&&s<0,mp=(c,x,y,z,sx,sy,sz)=>m(bx,c,x,y,z,sx,sy,sz,p),W='#f4f5f7',R='#d9232d',K='#14181d';
-/* rekaan rapidKL LRT 3-Car ART: badan putih, jalur merah atas & garis merah bawah tingkap, tingkap hitam, muka hitam dengan jalur merah, paparan LRT MALAYSIA */
-mp('#2b2f34',0,.021,0,.15,.018,.14);mp(W,0,.0565,0,.15,.053,.16);mp(R,0,.0865,0,.15,.007,.1612);mp(K,0,.1085,0,.15,.037,.1614);mp(R,0,.1375,0,.15,.021,.1612);mp(W,0,.153,0,.15,.01,.146);
+else if(kind==='lrt'){parts=[];[-.31,0,.31].forEach(q=>[-1,1].forEach(s=>{const p=mk(q+s*.0725),hc=q>0&&s>0,tc=q<0&&s<0,mp=(c,x,y,z,sx,sy,sz)=>m(bx,c,x,y,z,sx,sy,sz,p),W='#f4f5f7',K='#14181d';
+/* rekaan rapidKL LRT 3-Car ART: badan "loft" (hidung tirus, cermin depan condong, bumbung bulat), jalur merah, tingkap hitam, logo rapidKL */
+mM(lrtBody(hc,tc),LRM,0,0,0,1,1,1,p);
 mp('#8e949b',hc?-.02:tc?.02:0,.164,0,hc||tc?.07:.1,.012,.09);
 [-.0375,.0375].forEach(x=>mp(W,x,.1085,0,.006,.037,.1618));
 {const dx=(hc||tc)?-s*.04:s*.04;mp('#e3e6ea',dx,.1085,0,.034,.037,.1622);mp(K,dx,.1085,0,.004,.033,.163)}
 if((s>0&&q<.3)||(s<0&&q>-.3))mp('#0f1114',s*.0825,.09,0,.03,.125,.15);
 const lg=(t,x,sd,w)=>{const o=mM(PLN,rklMat(t),x,.0565,sd*.0816,w,.021,1,p);if(sd<0)o.rotation.y=Math.PI};
 if(s<0){lg('rapid',.032,1,.07);lg('KL',.05,-1,.039)}else{lg('KL',-.05,1,.039);lg('rapid',-.032,-1,.07)}
-if(hc){mp('#101317',.0925,.085,0,.035,.1,.15);[-1,1].forEach(z=>{mp(R,.0925,.085,z*.0755,.036,.1,.012);const w=mp(R,.055,.11,z*.0815,.075,.012,.002);w.rotation.z=-.75;mM(bx,hlM,.1115,.052,z*.052,.006,.02,.03,p)});mp('#1d2630',.1105,.108,0,.004,.042,.125);mp('#ffa000',.1115,.136,0,.003,.008,.05)}
-if(tc){mp('#101317',-.0875,.085,0,.025,.1,.15);[-1,1].forEach(z=>{mp(R,-.0875,.085,z*.0755,.026,.1,.012);mM(bx,tlM,-.101,.085,z*.068,.006,.055,.012,p)});mp('#1d2630',-.1005,.108,0,.004,.042,.125)}
+if(hc){[-1,1].forEach(z=>mM(bx,hlM,.1045,.048,z*.03,.006,.018,.022,p));mp('#ffa000',.1035,.088,0,.003,.008,.04)}
+if(tc)[-1,1].forEach(z=>mM(bx,tlM,-.1015,.078,z*.04,.006,.05,.012,p));
 }))}
 else if(kind==='mono'){parts=[];[-.25,.25].forEach(q=>[-1,1].forEach(s=>{const p=mk(q+s*.115);m(bx,'#f7f7f7',0,.09,0,.235,.13,.17,p);m(bx,'#e53935',0,.04,0,.235,.03,.172,p);m(bx,'#6fb4d8',-s*.02,.11,0,.19,.05,.175,p);m(bx,'#6f7c88',0,.01,0,.25,.03,.1,p);if(q>0&&s>0)vLamps(p,.12,-.2,.08,.055,0,.02);if(q<0&&s<0)vLamps(p,.2,-.12,.08,.055,0,.02)}))}
 else if(kind==='pol'){const bk='#1a237e';[.09,-.09].forEach(x=>m(bx,'#212121',x,.04,0,.075,.075,.022,g));m(bx,'#f4f4f4',0,.08,0,.2,.04,.05,g);m(bx,'#1565c0',.085,.105,0,.05,.06,.046,g);m(bx,'#212121',-.04,.108,0,.09,.02,.05,g);m(bx,'#cfd8dc',.1,.15,0,.012,.045,.04,g);
